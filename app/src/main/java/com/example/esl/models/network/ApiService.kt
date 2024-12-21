@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.POST
 
-const val BASE_URL = "http://192.168.1.12:3000/api/auth/"
+const val BASE_URL = "http://192.168.1.14:3000/"
 
 data class RegisterRequest(
     val nama: String,
@@ -41,10 +41,10 @@ data class RegisterResponse(
 data class LoginRequest(val email: String, val password: String)
 
 interface ApiService {
-    @POST("register")
+    @POST("api/auth/register")
     suspend fun register(@Body request: RegisterRequest): Response<RegisterResponse>
 
-    @POST("login")
+    @POST("api/auth/login")
     suspend fun login(@Body request: LoginRequest): AuthResponse
 }
 
