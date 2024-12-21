@@ -1,7 +1,29 @@
 package com.example.esl.models.local.entities
 
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "penyewaan",
+    foreignKeys = [
+        ForeignKey(
+            entity = User::class,
+            parentColumns = ["id_users"],
+            childColumns = ["id_users"],
+            onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = Property::class,
+            parentColumns = ["id_properti"],
+            childColumns = ["id_properti"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [Index(value = ["id_users"]), Index(value = ["id_properti"])]
+)
 data class Penyewaan(
-    val id_penyewaan: Int,
+    @PrimaryKey(autoGenerate = true) val id_penyewaan: Int = 0,
     val id_users: Int,
     val id_properti: Int,
     val tanggalMulai: String,

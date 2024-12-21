@@ -25,6 +25,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.esl.models.local.entities.User
 import com.example.esl.ui.theme.ESLTheme
 
 @Composable
@@ -51,7 +52,7 @@ fun Home() {
 fun GreetingSection() {
     Column {
         Text(
-            text = "Selamat Datang!",
+            text = "Selamat Datang, Wisatawan!",
             style = MaterialTheme.typography.headlineSmall,
             color = Color.White,
         )

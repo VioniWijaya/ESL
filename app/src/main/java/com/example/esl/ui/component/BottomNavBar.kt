@@ -19,8 +19,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 
+
 @Composable
 fun BottomNavBar(navController: NavController, modifier: Modifier = Modifier) { // Parameter harus bertipe NavController
+
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
     BottomAppBar(

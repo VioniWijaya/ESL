@@ -1,7 +1,11 @@
 package com.example.esl.models.local.entities
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "properti")
 data class Property(
-    val id_properti: Int,
+    @PrimaryKey(autoGenerate = true) val id_properti: Int = 0,
     val nama_properti: String,
     val jenis_properti: String, // Enum: Kendaraan, Rumah
     val deskripsi: String,

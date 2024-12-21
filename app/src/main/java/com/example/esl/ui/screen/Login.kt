@@ -14,12 +14,16 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.esl.R
+import com.example.esl.models.network.LoginRequest
+import com.example.esl.models.network.RetrofitInstance
+import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier, onLoginSuccess: ()-> Unit) {
+fun LoginScreen(modifier: Modifier = Modifier, onLoginSuccess: ()-> Unit, onRegisterClick: () -> Unit) {
+    val coroutineScope = rememberCoroutineScope()
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-
+    var errorMessage by remember { mutableStateOf("") }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -58,7 +62,6 @@ fun LoginScreen(modifier: Modifier = Modifier, onLoginSuccess: ()-> Unit) {
                 ),
                 shape = RoundedCornerShape(8.dp)
             )
-
             Text(
                 text = "Password",
                 color = Color.White,
@@ -69,6 +72,7 @@ fun LoginScreen(modifier: Modifier = Modifier, onLoginSuccess: ()-> Unit) {
             TextField(
                 value = password,
                 onValueChange = { password = it },
+                singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -80,7 +84,14 @@ fun LoginScreen(modifier: Modifier = Modifier, onLoginSuccess: ()-> Unit) {
                 shape = RoundedCornerShape(8.dp)
             )
             Button(
-                onClick = onLoginSuccess ,
+                onClick = { coroutineScope.launch {
+                    try {
+                        val response = RetrofitInstance.api.login(LoginRequest(username, password))
+                        onLoginSuccess()
+                    } catch (e: Exception) {
+                        errorMessage = "Login gagal: ${e.message}"
+                    }
+                } } ,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -94,6 +105,12 @@ fun LoginScreen(modifier: Modifier = Modifier, onLoginSuccess: ()-> Unit) {
                     color = Color.Black,
                     fontSize = 16.sp
                 )
+            }
+            TextButton(onClick = { onRegisterClick() }, modifier = Modifier.padding(top = 8.dp)) {
+                Text("Belum punya akun? Register di sini")
+            }
+            if (errorMessage.isNotEmpty()) {
+                Text(errorMessage, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
             }
         }
     }

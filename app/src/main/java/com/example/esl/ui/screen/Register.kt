@@ -17,12 +17,15 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,19 +39,29 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.esl.R
+import com.example.esl.models.network.RegisterRequest
+import com.example.esl.models.network.RetrofitInstance
 import com.example.esl.ui.theme.BackgroundColor
 import com.example.esl.ui.theme.ButtonColors
 import com.example.esl.ui.theme.ESLTheme
+import kotlinx.coroutines.launch
 
 @Composable
-fun Register(modifier: Modifier = Modifier) {
+fun Register(modifier: Modifier = Modifier, onRegisterSuccess: () -> Unit) {
+    val coroutineScope = rememberCoroutineScope()
+
     var nama by remember { mutableStateOf("") }
     var noHP by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
 
-        Column(
+    var isLoading by remember { mutableStateOf(false) }
+    val validateFields = nama.isNotBlank() && noHP.isNotBlank() && email.isNotBlank() &&
+            username.isNotBlank() && password.isNotBlank()
+
+    Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
@@ -71,7 +84,7 @@ fun Register(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .padding(horizontal = 25.dp, vertical = 15.dp)
             ) {
-                TextField(
+                OutlinedTextField(
                     value = nama,
                     onValueChange = { nama = it },
                     singleLine = true,
@@ -81,6 +94,7 @@ fun Register(modifier: Modifier = Modifier) {
                         .fillMaxWidth()
                         .padding(15.dp)
                 )
+                if (nama.isBlank()) Text("Nama tidak boleh kosong", color = Color.Red)
 
 
                 TextField(
@@ -94,6 +108,8 @@ fun Register(modifier: Modifier = Modifier) {
                         .padding(15.dp)
                 )
 
+                if (noHP.isBlank()) Text("No HP tidak boleh kosong", color = Color.Red)
+
                 TextField(
                     value = email,
                     onValueChange = { email = it },
@@ -104,7 +120,7 @@ fun Register(modifier: Modifier = Modifier) {
                         .fillMaxWidth()
                         .padding(15.dp)
                 )
-
+                if (email.isBlank()) Text("Email tidak boleh kosong", color = Color.Red)
                 TextField(
                     value = username,
                     onValueChange = { username = it },
@@ -115,6 +131,7 @@ fun Register(modifier: Modifier = Modifier) {
                         .fillMaxWidth()
                         .padding(15.dp)
                 )
+                if (username.isBlank()) Text("Username tidak boleh kosong", color = Color.Red)
 
                 TextField(
                     value = password,
@@ -126,12 +143,34 @@ fun Register(modifier: Modifier = Modifier) {
                         .fillMaxWidth()
                         .padding(15.dp)
                 )
+                if (password.isBlank()) Text("Password tidak boleh kosong", color = Color.Red)
             }
 
             Spacer(modifier = Modifier.size(8.dp))
 
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { coroutineScope.launch {
+                    try {
+                        val response = RetrofitInstance.api.register(
+                            RegisterRequest(nama, noHP, email, username, password)
+                        )
+
+                        if (response.isSuccessful && response.body() != null) {
+                            val registerResponse = response.body()
+                            if (registerResponse?.success == true) {
+                                onRegisterSuccess() // Notifikasi bahwa register berhasil
+                            } else {
+                                errorMessage = "Register gagal: ${registerResponse?.message}"
+                            }
+                        } else {
+                            errorMessage = "Register gagal: ${response.errorBody()?.string()}"
+                        }
+                    } catch (e: Exception) {
+                        errorMessage = "Terjadi kesalahan: ${e.localizedMessage}"
+                        e.printStackTrace()
+                    }
+
+                } },
                 contentPadding = PaddingValues(16.dp),
                 shape = RoundedCornerShape(20.dp),
                 modifier = Modifier
@@ -146,6 +185,9 @@ fun Register(modifier: Modifier = Modifier) {
                     modifier = Modifier.padding(horizontal = 20.dp)
                 )
             }
+        if (errorMessage.isNotEmpty()) {
+            Text(errorMessage, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
+        }
 
             Spacer(modifier = Modifier.size(15.dp))
 
@@ -181,10 +223,10 @@ fun Register(modifier: Modifier = Modifier) {
     }
 
 
-@Preview
-@Composable
-private fun RegisterPrev() {
-    ESLTheme {
-        Register()
-    }
-}
+//@Preview
+//@Composable
+//private fun RegisterPrev() {
+//    ESLTheme {
+//        Register()
+//    }
+//}
