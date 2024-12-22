@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.esl"
-        minSdk = 24
+        minSdk = 25
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.androidx.room.compiler)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.material3)
+    implementation(libs.androidx.compose.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
