@@ -68,13 +68,6 @@ fun HeaderSection() {
             .padding(vertical = 8.dp)
     ) {
         Text(
-            text = "←",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White,
-            modifier = Modifier.padding(end = 8.dp)
-        )
-        Text(
             text = "Pemesanan",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,

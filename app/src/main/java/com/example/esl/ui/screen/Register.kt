@@ -22,7 +22,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +39,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -73,84 +76,113 @@ fun Register(modifier: Modifier = Modifier, navController: NavController, onRegi
                 .padding(top = 40.dp)
                 .background(BackgroundColor)
         ) {
-            Text(
-                text = "DAFTAR AKUN",
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-            )
             Spacer(modifier = Modifier.size(8.dp))
+        Text(
+            text = "DAFTAR AKUN",
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+        )
+        Spacer(modifier = Modifier.size(8.dp))
 
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .padding(horizontal = 25.dp, vertical = 15.dp)
+        ) {
+            // Nama
+            TextField(
+                value = nama,
+                onValueChange = { nama = it },
+                singleLine = true,
+                label = { Text("Nama") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                 modifier = Modifier
-                    .padding(horizontal = 25.dp, vertical = 15.dp)
-            ) {
-                OutlinedTextField(
-                    value = nama,
-                    onValueChange = { nama = it },
-                    singleLine = true,
-                    label = { Text(stringResource(R.string.Nama)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(15.dp)
-                )
-                if (nama.isBlank()) Text("Nama tidak boleh kosong", color = Color.Red)
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
+                colors = TextFieldDefaults.colors(
+                    unfocusedContainerColor = Color.White.copy(alpha = 0.2f),
+                    focusedContainerColor = Color.White.copy(alpha = 0.2f)
+                ),
+                shape = RoundedCornerShape(8.dp)
+            )
+            if (nama.isBlank()) Text("Nama tidak boleh kosong", color = Color.Red)
 
+            // No HP
+            TextField(
+                value = noHP,
+                onValueChange = { noHP = it },
+                singleLine = true,
+                label = { Text("No HP") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
+                colors = TextFieldDefaults.colors(
+                    unfocusedContainerColor = Color.White.copy(alpha = 0.2f),
+                    focusedContainerColor = Color.White.copy(alpha = 0.2f)
+                ),
+                shape = RoundedCornerShape(8.dp)
+            )
+            if (noHP.isBlank()) Text("No HP tidak boleh kosong", color = Color.Red)
 
-                TextField(
-                    value = noHP,
-                    onValueChange = { noHP = it },
-                    singleLine = true,
-                    label = { Text(stringResource(R.string.noHP)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(15.dp)
-                )
+            // Email
+            TextField(
+                value = email,
+                onValueChange = { email = it },
+                singleLine = true,
+                label = { Text("Email") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
+                colors = TextFieldDefaults.colors(
+                    unfocusedContainerColor = Color.White.copy(alpha = 0.2f),
+                    focusedContainerColor = Color.White.copy(alpha = 0.2f)
+                ),
+                shape = RoundedCornerShape(8.dp)
+            )
+            if (email.isBlank()) Text("Email tidak boleh kosong", color = Color.Red)
 
-                if (noHP.isBlank()) Text("No HP tidak boleh kosong", color = Color.Red)
+            // Username
+            TextField(
+                value = username,
+                onValueChange = { username = it },
+                singleLine = true,
+                label = { Text("Username") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
+                colors = TextFieldDefaults.colors(
+                    unfocusedContainerColor = Color.White.copy(alpha = 0.2f),
+                    focusedContainerColor = Color.White.copy(alpha = 0.2f)
+                ),
+                shape = RoundedCornerShape(8.dp)
+            )
+            if (username.isBlank()) Text("Username tidak boleh kosong", color = Color.Red)
 
-                TextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    singleLine = true,
-                    label = { Text(stringResource(R.string.email)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(15.dp)
-                )
-                if (email.isBlank()) Text("Email tidak boleh kosong", color = Color.Red)
-                TextField(
-                    value = username,
-                    onValueChange = { username = it },
-                    singleLine = true,
-                    label = { Text(stringResource(R.string.username)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(15.dp)
-                )
-                if (username.isBlank()) Text("Username tidak boleh kosong", color = Color.Red)
+            // Password
+            TextField(
+                value = password,
+                onValueChange = { password = it },
+                singleLine = true,
+                label = { Text("Password") },
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
+                colors = TextFieldDefaults.colors(
+                    unfocusedContainerColor = Color.White.copy(alpha = 0.2f),
+                    focusedContainerColor = Color.White.copy(alpha = 0.2f)
+                ),
+                shape = RoundedCornerShape(8.dp)
+            )
+            if (password.isBlank()) Text("Password tidak boleh kosong", color = Color.Red)
+        }
 
-                TextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    singleLine = true,
-                    label = { Text(stringResource(R.string.password)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(15.dp)
-                )
-                if (password.isBlank()) Text("Password tidak boleh kosong", color = Color.Red)
-            }
-
-            Spacer(modifier = Modifier.size(8.dp))
-
+        Spacer(modifier = Modifier.size(8.dp))
             Button(
                 onClick = { Log.d("RegisterButton", "Tombol Daftar diklik")
                     coroutineScope.launch {
@@ -217,41 +249,30 @@ fun Register(modifier: Modifier = Modifier, navController: NavController, onRegi
                     )
                 }
             }
+
         if (errorMessage.isNotEmpty()) {
             Text(errorMessage, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
         }
 
-            Spacer(modifier = Modifier.size(15.dp))
+        Spacer(modifier = Modifier.size(15.dp))
 
-            Text(text = "atau coba cara lain")
-
-            Spacer(modifier = Modifier.size(12.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
+        TextButton(
+            onClick = { onLoginClick() },
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .background(Color.Transparent, RoundedCornerShape(8.dp))
+        ) {
+            Text(
+                text = "Sudah punya akun? Masuk di sini",
+                fontSize = 14.sp,
+                color = Color.White,
                 modifier = Modifier
-                    .padding(20.dp)
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.gle),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(60.dp)
-                        .padding(horizontal = 5.dp)
-                )
-
-                Spacer(modifier = Modifier.size(12.dp))
-
-                Image(
-                    painter = painterResource(R.drawable.fb),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(60.dp)
-                        .padding(horizontal = 5.dp)
-                )
-            }
+                    .background(Color(0xFF40E0D0), RoundedCornerShape(8.dp))
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            )
         }
     }
+}
+
 
 

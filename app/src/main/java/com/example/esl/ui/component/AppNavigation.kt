@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.esl.ui.Home
 import com.example.esl.ui.LoginScreen
 import com.example.esl.ui.screen.DetailProperty
 import com.example.esl.ui.screen.Home
@@ -28,7 +29,7 @@ sealed class Screen(val route: String) {
 }
 
 @Composable
-fun AppNavigation() {
+fun AppNavigation(navController: NavHostController) {
     val navController = rememberNavController()
     val propertyViewModel = viewModel<PropertyViewModel>()
 
@@ -73,7 +74,7 @@ fun AppNavigation() {
 
         // Halaman Home
         composable(Screen.Home.route) {
-            Home()
+            Home(navController)
         }
 
         // Halaman Detail Property
