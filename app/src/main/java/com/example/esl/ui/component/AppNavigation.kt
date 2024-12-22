@@ -1,13 +1,14 @@
 package com.example.esl.ui.component
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.esl.ui.Home
 import com.example.esl.ui.LoginScreen
-import com.example.esl.ui.screen.Home
 import com.example.esl.ui.screen.Register
 
 sealed class Screen(val route: String) {
@@ -17,7 +18,7 @@ sealed class Screen(val route: String) {
 }
 
 @Composable
-fun AppNavigation() {
+fun AppNavigation(navController: NavHostController) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Screen.Login.route) {
@@ -32,13 +33,16 @@ fun AppNavigation() {
         // Halaman Register
         composable(Screen.Register.route) {
             Register(
-                onRegisterSuccess = { navController.popBackStack(Screen.Login.route, false) }
+                onRegisterSuccess = { navController.popBackStack(Screen.Login.route, false) },
+                onLoginClick = { navController.navigate(Screen.Login.route) }
+
             )
         }
 
         // Halaman Home
         composable(Screen.Home.route) {
-            Home()
+            Home(navController)
         }
+
     }
 }

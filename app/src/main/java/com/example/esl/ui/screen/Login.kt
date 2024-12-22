@@ -84,19 +84,25 @@ fun LoginScreen(modifier: Modifier = Modifier, onLoginSuccess: ()-> Unit, onRegi
                 shape = RoundedCornerShape(8.dp)
             )
             Button(
-                onClick = { coroutineScope.launch {
-                    try {
-                        val response = RetrofitInstance.api.login(LoginRequest(username, password))
-                        onLoginSuccess()
-                    } catch (e: Exception) {
-                        errorMessage = "Login gagal: ${e.message}"
+                onClick = {
+                    coroutineScope.launch {
+                        try {
+                            val loginRequest = LoginRequest(username = username, password = password)
+                            println("Request data: $loginRequest")
+                            val response = RetrofitInstance.api.login(loginRequest)
+                            println("Response: $response")
+                            onLoginSuccess()
+                        } catch (e: Exception) {
+                            errorMessage = "Login gagal: ${e.message}"
+                            println("Error: ${e.message}")
+                        }
                     }
-                } } ,
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFE0FFFF)  // Light cyan color
+                    containerColor = Color(0xFFE0FFFF)
                 ),
                 shape = RoundedCornerShape(25.dp)
             ) {
@@ -106,11 +112,31 @@ fun LoginScreen(modifier: Modifier = Modifier, onLoginSuccess: ()-> Unit, onRegi
                     fontSize = 16.sp
                 )
             }
-            TextButton(onClick = { onRegisterClick() }, modifier = Modifier.padding(top = 8.dp)) {
-                Text("Belum punya akun? Register di sini")
-            }
+            // Tampilkan pesan error di sini
             if (errorMessage.isNotEmpty()) {
-                Text(errorMessage, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
+                Text(
+                    text = errorMessage,
+                    color = Color.Red,
+                    fontSize = 14.sp,
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .fillMaxWidth()
+                )
+            }
+            TextButton(
+                onClick = { onRegisterClick() },
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .background(Color.Transparent, RoundedCornerShape(8.dp))
+            ) {
+                Text(
+                    text = "Belum punya akun? Register di sini",
+                    fontSize = 14.sp,
+                    color = Color.White,
+                    modifier = Modifier
+                        .background(Color(0xFF40E0D0), RoundedCornerShape(8.dp))
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                )
             }
         }
     }
