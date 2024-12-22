@@ -1,11 +1,22 @@
 package com.example.esl.models.network
 
+import android.icu.util.TimeUnit
+import com.example.esl.models.local.entities.Property
 import com.example.esl.models.local.entities.User
+import okhttp3.OkHttpClient
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+import retrofit2.Call
+import kotlinx.coroutines.delay
+//import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Path
 
 const val BASE_URL = "http://192.168.1.14:3000/"
 
@@ -40,19 +51,71 @@ data class RegisterResponse(
 
 data class LoginRequest(val email: String, val password: String)
 
+data class PropertyListResponse(
+    val success: Boolean,
+    val message: String,
+    val data: List<Property>
+)
+
+data class PropertyResponse(
+    val success: Boolean,
+    val message: String,
+    val data: Property
+)
+
+data class UlasanRequest(
+    val id_users: Int,
+    val id_penyewaan: Int,
+    val ulasan: String,
+    val rating: Int,
+    val media_ulasan: String? = null
+)
+
+data class UlasanResponse(
+    val id_ulasan: Int,
+    val id_users: Int,
+    val id_penyewaan: Int,
+    val ulasan: String,
+    val rating: Int,
+    val media_ulasan: String?,
+    val tanggal_input: String
+)
 interface ApiService {
     @POST("api/auth/register")
     suspend fun register(@Body request: RegisterRequest): Response<RegisterResponse>
 
     @POST("api/auth/login")
     suspend fun login(@Body request: LoginRequest): AuthResponse
+
+    // Property Endpoints
+    @GET("api/properti")
+    suspend fun getAllProperties(): Response<PropertyListResponse>
+
+    @GET("api/properti/{id}")
+    suspend fun getDetailProperti(@Path("id") id: Int): Response<PropertyResponse>
+
+    @POST("api/ulasan")
+    suspend fun createUlasan(@Body ulasanRequest: UlasanRequest): Response<UlasanResponse>
+
+    @PUT("ulasan/{id}")
+    suspend fun updateUlasan(
+        @Path("id") id: Int,
+        @Body ulasanRequest: UlasanRequest
+    ): Response<UlasanResponse>
 }
 
-
 object RetrofitInstance {
+
+    private val client = OkHttpClient.Builder()
+        .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+        .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+        .writeTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+        .build()
+
     val api: ApiService by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
+            .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ApiService::class.java)

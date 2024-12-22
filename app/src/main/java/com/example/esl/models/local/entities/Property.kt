@@ -12,8 +12,8 @@ data class Property(
     val pemilik: String,
     val hargaSewa: Int,
     val lokasi: String,
-    val lang: Double,
-    val long: Double,
+    val latitude: Double,
+    val longitude: Double,
     val status_properti: Boolean,
     val foto_properti: String?
 )

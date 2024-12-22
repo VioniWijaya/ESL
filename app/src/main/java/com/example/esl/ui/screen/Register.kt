@@ -1,5 +1,6 @@
 package com.example.esl.ui.screen
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +18,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -38,6 +40,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.esl.R
 import com.example.esl.models.network.RegisterRequest
 import com.example.esl.models.network.RetrofitInstance
@@ -47,7 +50,7 @@ import com.example.esl.ui.theme.ESLTheme
 import kotlinx.coroutines.launch
 
 @Composable
-fun Register(modifier: Modifier = Modifier, onRegisterSuccess: () -> Unit) {
+fun Register(modifier: Modifier = Modifier, navController: NavController, onRegisterSuccess: () -> Unit) {
     val coroutineScope = rememberCoroutineScope()
 
     var nama by remember { mutableStateOf("") }
@@ -149,26 +152,47 @@ fun Register(modifier: Modifier = Modifier, onRegisterSuccess: () -> Unit) {
             Spacer(modifier = Modifier.size(8.dp))
 
             Button(
-                onClick = { coroutineScope.launch {
-                    try {
-                        val response = RetrofitInstance.api.register(
-                            RegisterRequest(nama, noHP, email, username, password)
-                        )
+                onClick = { Log.d("RegisterButton", "Tombol Daftar diklik")
+                    coroutineScope.launch {
+                        Log.d("RegisterCoroutine", "Coroutine dimulai")
+                        if(validateFields) {
+                            isLoading = true
+                            Log.d("LoadingState", "isLoading: $isLoading")
+                            try {
+                                Log.d("API Call", "Sending request to API")
+                                val response = RetrofitInstance.api.register(
+                                    RegisterRequest(nama, noHP, email, username, password)
+                                )
+                                Log.d("API Response", "Response: ${response.body()?.message}")
 
-                        if (response.isSuccessful && response.body() != null) {
-                            val registerResponse = response.body()
-                            if (registerResponse?.success == true) {
-                                onRegisterSuccess() // Notifikasi bahwa register berhasil
-                            } else {
-                                errorMessage = "Register gagal: ${registerResponse?.message}"
+                                if (response.isSuccessful && response.body() != null) {
+                                    val registerResponse = response.body()
+                                    if (registerResponse?.success == true) {
+                                        Log.d("RegisterSuccess", "Registrasi berhasil")
+                                        onRegisterSuccess()// Notifikasi bahwa register berhasil
+                                    } else {
+                                        errorMessage =
+                                            "Register gagal: ${registerResponse?.message ?: "Unknown Error"}"
+                                        Log.e("RegisterError", errorMessage)
+                                    }
+                                } else {
+                                    val errorBody = response.errorBody()?.string()
+                                    errorMessage = "Register gagal: ${
+                                        response.errorBody()?.string() ?: "Unknown Error"
+                                    }"
+                                    Log.e("APIError", errorMessage)
+                                }
+                            } catch (e: Exception) {
+                                errorMessage = "Terjadi kesalahan: ${e.localizedMessage}"
+                                Log.e("Exception", errorMessage, e)
+                                e.printStackTrace()
+                            } finally {
+                                isLoading = false
+                                Log.d("LoadingState", "isLoading: $isLoading")
                             }
                         } else {
-                            errorMessage = "Register gagal: ${response.errorBody()?.string()}"
+                            errorMessage = "Harap Isi Semua Kolom"
                         }
-                    } catch (e: Exception) {
-                        errorMessage = "Terjadi kesalahan: ${e.localizedMessage}"
-                        e.printStackTrace()
-                    }
 
                 } },
                 contentPadding = PaddingValues(16.dp),
@@ -180,10 +204,18 @@ fun Register(modifier: Modifier = Modifier, onRegisterSuccess: () -> Unit) {
                     contentColor = Color.Black // Warna text
                 ),
             ) {
-                Text(
-                    text = "Daftar",
-                    modifier = Modifier.padding(horizontal = 20.dp)
-                )
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text(
+                        text = "Daftar",
+                        modifier = Modifier.padding(horizontal = 20.dp)
+                    )
+                }
             }
         if (errorMessage.isNotEmpty()) {
             Text(errorMessage, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
@@ -223,10 +255,3 @@ fun Register(modifier: Modifier = Modifier, onRegisterSuccess: () -> Unit) {
     }
 
 
-//@Preview
-//@Composable
-//private fun RegisterPrev() {
-//    ESLTheme {
-//        Register()
-//    }
-//}

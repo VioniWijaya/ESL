@@ -69,7 +69,7 @@ fun PemesananScreen() {
                 .padding(innerPadding)
                 .background(Color(0xFFB2DFDB))
         ) {
-            DetailKendaraan()
+            DetailProperty()
             Spacer(modifier = Modifier.height(16.dp))
             FormField(label = "Durasi", value = durasi, onValueChange = { durasi = it })
             FormField(label = "Mulai", value = mulai, onValueChange = { mulai = it })
@@ -95,7 +95,7 @@ fun PemesananScreen() {
 }
 
 @Composable
-fun DetailKendaraan() {
+fun DetailProperty() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
