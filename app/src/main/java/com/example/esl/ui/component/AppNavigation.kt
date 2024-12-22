@@ -9,12 +9,18 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.esl.ui.Home
 import com.example.esl.ui.LoginScreen
+import com.example.esl.ui.screen.ProfileScreen
 import com.example.esl.ui.screen.Register
+import com.example.esl.ui.screen.RiwayatScreen
+import com.example.esl.ui.screen.SearchScreen
 
 sealed class Screen(val route: String) {
     object Login : Screen("login")
     object Register : Screen("register")
     object Home : Screen("home")
+    object Search : Screen("search")
+    object History : Screen("history")
+    object Profile : Screen("profile")
 }
 
 @Composable
@@ -42,6 +48,17 @@ fun AppNavigation(navController: NavHostController) {
         // Halaman Home
         composable(Screen.Home.route) {
             Home(navController)
+        }
+        composable(Screen.Search.route) {
+            SearchScreen(navController)
+        }
+
+        composable(Screen.History.route) {
+            RiwayatScreen(navController)
+        }
+
+        composable(Screen.Profile.route) {
+            ProfileScreen(navController)
         }
 
     }

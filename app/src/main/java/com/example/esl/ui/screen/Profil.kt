@@ -9,11 +9,11 @@ import androidx.navigation.NavController
 import androidx.room.parser.Section
 
 @Composable
-fun SearchScreen(navController: NavController) {
+fun ProfileScreen(navController: NavController) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Section.Text("Search Screen")
+        Section.Text("Profile Screen")
     }
 }
