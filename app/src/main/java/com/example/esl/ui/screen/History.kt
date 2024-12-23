@@ -27,6 +27,7 @@ import com.example.esl.ui.component.BottomNavBar
 fun RiwayatScreen(navController: NavController, viewModel: RentalViewModel = viewModel()) {
     val rentalData by viewModel.rentalData.collectAsState()
 
+    // Load data rentals ketika screen muncul
     LaunchedEffect(Unit) {
         viewModel.loadRentals()
     }
@@ -99,5 +100,3 @@ fun RentalCard(rental: RentalHistory) {
         }
     }
 }
-
-//berhasil
