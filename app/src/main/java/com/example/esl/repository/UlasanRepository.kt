@@ -1,19 +1,21 @@
 package com.example.esl.repository
 
+import com.example.esl.models.network.ApiService
 import com.example.esl.models.network.RetrofitInstance
 import com.example.esl.models.network.UlasanRequest
 import com.example.esl.models.network.UlasanResponse
 
-class UlasanRepository {
-    private val api = RetrofitInstance.api
-
+class UlasanRepository(private val api: ApiService) {
     suspend fun createUlasan(ulasanRequest: UlasanRequest): Result<UlasanResponse> {
         return try {
             val response = api.createUlasan(ulasanRequest)
             if (response.isSuccessful) {
-                Result.success(response.body()!!)
+                response.body()?.let {
+                    Result.success(it)
+                } ?: Result.failure(Exception("Response body is null"))
             } else {
-                Result.failure(Exception(response.errorBody()?.string()))
+                val errorMessage = response.errorBody()?.string() ?: "Unknown error occurred"
+                Result.failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -24,9 +26,12 @@ class UlasanRepository {
         return try {
             val response = api.updateUlasan(id, ulasanRequest)
             if (response.isSuccessful) {
-                Result.success(response.body()!!)
+                response.body()?.let {
+                    Result.success(it)
+                } ?: Result.failure(Exception("Response body is null"))
             } else {
-                Result.failure(Exception(response.errorBody()?.string()))
+                val errorMessage = response.errorBody()?.string() ?: "Unknown error occurred"
+                Result.failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
             Result.failure(e)

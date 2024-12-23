@@ -1,5 +1,6 @@
 package com.example.esl.ui.screen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +21,7 @@ import androidx.navigation.NavController
 import com.example.esl.models.network.RentalHistory
 import com.example.esl.models.network.RentalViewModel
 import com.example.esl.ui.component.BottomNavBar
+import com.example.esl.ui.component.Screen
 import com.example.esl.ui.component.TopButtonBar
 
 
@@ -59,7 +61,11 @@ fun RiwayatScreen(navController: NavController, viewModel: RentalViewModel = vie
                     modifier = Modifier.fillMaxSize()
                 ) {
                     items(rentalData) { rental ->
-                        RentalCard(rental)
+                        RentalCard(
+                            rental = rental,
+                            navController = navController
+                        )
+
                     }
                 }
             }
@@ -68,7 +74,10 @@ fun RiwayatScreen(navController: NavController, viewModel: RentalViewModel = vie
 }
 
 @Composable
-fun RentalCard(rental: RentalHistory) {
+fun RentalCard(
+    rental: RentalHistory,
+    navController: NavController
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -99,17 +108,18 @@ fun RentalCard(rental: RentalHistory) {
                 fontSize = 14.sp,
                 color = Color.Gray
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(
-                onClick = {
-                },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF007B7F),
-                    contentColor = Color.White
-                )
-            ) {
-                Text(text = "Beri Ulasan")
+            // Add Review Button
+            if (rental.status.equals("Selesai", ignoreCase = true)) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = {
+                        navController.navigate(Screen.Ulasan.createRoute(rental.id_penyewaan))
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF007B7F))
+                ) {
+                    Text("Beri Ulasan")
+                }
             }
         }
     }

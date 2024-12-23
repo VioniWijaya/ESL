@@ -12,6 +12,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 
 data class RentalHistory(
+    val id_penyewaan: Int,
     val status: String,
     val tanggalOrder: String,
     val nama_properti: String,
@@ -23,7 +24,7 @@ interface RentalApi {
     suspend fun getRentals(): Response<List<RentalHistory>>
 
     companion object {
-        private const val BASE_URL = "http://192.168.19.66:3000/"
+        private const val BASE_URL = "http://192.168.1.14:3000/"
 
         fun create(): RentalApi {
             val retrofit = Retrofit.Builder()
@@ -47,6 +48,7 @@ class RentalViewModel : ViewModel() {
     fun loadRentals() {
         viewModelScope.launch {
             try {
+                Log.d("RentalViewModel", "Starting API call...")
                 val response: Response<List<RentalHistory>> = apiService.getRentals()
                 if (response.isSuccessful) {
                     Log.d("RentalViewModel", "API Response: ${response.body()}")
