@@ -1,14 +1,22 @@
 package com.example.esl.models.network
 
+
 import android.icu.util.TimeUnit
 import com.example.esl.models.local.entities.Property
-import com.example.esl.models.local.entities.User
+
 import okhttp3.OkHttpClient
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import retrofit2.Call
 import kotlinx.coroutines.delay
-//import okhttp3.logging.HttpLoggingInterceptor
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.esl.models.local.entities.User
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -50,6 +58,7 @@ data class RegisterResponse(
 )
 
 data class LoginRequest(val username: String, val password: String)
+
 
 data class PropertyListResponse(
     val success: Boolean,
@@ -161,3 +170,5 @@ object RetrofitInstance {
             .create(ApiService::class.java)
     }
 }
+
+

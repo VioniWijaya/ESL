@@ -2,14 +2,11 @@ package com.example.esl.ui.component
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.esl.ui.LoginScreen
 import com.example.esl.ui.screen.DaftarPenyewaanPage
@@ -20,11 +17,6 @@ import com.example.esl.ui.screen.PropertyListScreen
 import com.example.esl.ui.screen.Register
 import com.example.esl.ui.screen.UlasanPage
 //import com.example.esl.ui.screen.RegisterScreen
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.runtime.getValue
-import android.widget.Toast
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import com.example.esl.ui.Home
 import com.example.esl.viewmodel.PropertyViewModel
@@ -32,6 +24,7 @@ import com.example.esl.viewmodel.UlasanViewModel
 import com.example.esl.ui.screen.ProfileScreen
 import com.example.esl.ui.screen.Register
 import com.example.esl.ui.screen.RiwayatScreen
+import com.example.esl.ui.screen.StatusScreen
 
 
 sealed class Screen(val route: String) {
@@ -53,11 +46,11 @@ sealed class Screen(val route: String) {
 
     object History : Screen("history")
     object Profile : Screen("profile")
+    object Status : Screen("status")
 }
 
 @Composable
 fun AppNavigation(navController: NavHostController) {
-//    val navController = rememberNavController()
     val propertyViewModel = viewModel<PropertyViewModel>()
 
     NavHost(navController = navController, startDestination = Screen.Login.route) {
@@ -85,11 +78,24 @@ fun AppNavigation(navController: NavHostController) {
                         // Hapus semua screen sebelumnya dari back stack
 //                        popUpTo(Screen.Login.route) { inclusive = true }
                     }
+                },
+                onLoginClick = {
+                    navController.popBackStack(Screen.Login.route, inclusive = false)
                 }
             )
         }
 
-        // Halaman Property List
+
+
+        // Halaman Home
+        composable(Screen.Home.route) {
+            Home(navController)
+        }
+
+        composable(Screen.Status.route) {
+            StatusScreen(navController)
+        }
+
         composable(Screen.Searching.route) {
             PropertyListScreen(
                 modifier = Modifier,
@@ -101,9 +107,14 @@ fun AppNavigation(navController: NavHostController) {
             )
         }
 
-        // Halaman Home
-        composable(Screen.Home.route) {
-            Home(navController)
+
+        composable(Screen.History.route) {
+            RiwayatScreen(navController)
+
+        }
+
+        composable(Screen.Profile.route) {
+            ProfileScreen(navController)
         }
         composable(Screen.Searching.route) {
             PropertyListScreen(
@@ -161,7 +172,29 @@ fun AppNavigation(navController: NavHostController) {
             )
         }
 
-//
+
+        composable(Screen.DaftarPenyewaan.route) {
+            val viewModel: PenyewaanViewModel = viewModel()
+
+            // Ambil userId, misalnya dari sesi atau data lokal
+            val userId = 1 // Ganti dengan userId yang sesuai
+
+            // Panggil fungsi fetch data di ViewModel
+            LaunchedEffect(Unit) {
+                viewModel.fetchPenyewaanByUser(userId)
+            }
+
+            DaftarPenyewaanPage(
+                modifier = Modifier,
+                penyewaanList = viewModel.penyewaanList.value,
+                onUlasanClick = { orderId ->
+                    navController.navigate(Screen.Ulasan.createRoute(orderId))
+                },
+                onCancelClick = { orderId ->
+                    // Handle cancel logic
+                }
+            )
+        }
         // Halaman Ulasan
 
 // Update the navigation route in AppNavigation

@@ -22,6 +22,7 @@ import com.example.esl.models.network.RentalHistory
 import com.example.esl.models.network.RentalViewModel
 import com.example.esl.ui.component.BottomNavBar
 import com.example.esl.ui.component.Screen
+import com.example.esl.ui.component.TopButtonBar
 
 
 // Screen Riwayat Penyewaan
@@ -29,9 +30,7 @@ import com.example.esl.ui.component.Screen
 fun RiwayatScreen(navController: NavController, viewModel: RentalViewModel = viewModel()) {
     val rentalData by viewModel.rentalData.collectAsState()
 
-    // Load data rentals ketika screen muncul
     LaunchedEffect(Unit) {
-        Log.d("RiwayatScreen", "LaunchedEffect triggered")
         viewModel.loadRentals()
     }
 
@@ -56,6 +55,8 @@ fun RiwayatScreen(navController: NavController, viewModel: RentalViewModel = vie
                     color = Color.White
                 )
 
+                TopButtonBar(navController)
+
                 LazyColumn(
                     modifier = Modifier.fillMaxSize()
                 ) {
@@ -64,6 +65,7 @@ fun RiwayatScreen(navController: NavController, viewModel: RentalViewModel = vie
                             rental = rental,
                             navController = navController
                         )
+
                     }
                 }
             }
@@ -106,7 +108,6 @@ fun RentalCard(
                 fontSize = 14.sp,
                 color = Color.Gray
             )
-
             // Add Review Button
             if (rental.status.equals("Selesai", ignoreCase = true)) {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -115,7 +116,7 @@ fun RentalCard(
                         navController.navigate(Screen.Ulasan.createRoute(rental.id_penyewaan))
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2ED4D8))
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF007B7F))
                 ) {
                     Text("Beri Ulasan")
                 }

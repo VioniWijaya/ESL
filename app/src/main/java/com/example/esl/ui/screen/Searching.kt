@@ -40,7 +40,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.esl.models.local.entities.Property
 import com.example.esl.ui.component.BottomNavBar
 import com.example.esl.ui.component.Screen
@@ -152,8 +151,8 @@ fun PropertyCard(
 //            Spacer(modifier = Modifier.width(16.dp))
             Column {
                 Text(text = property.nama_properti, style = MaterialTheme.typography.titleMedium)
-                Text(text = "Harga: Rp${property.hargaSewa}", style = MaterialTheme.typography.labelSmall)
-                Text(text = "Lokasi: Rp${property.lokasi}", style = MaterialTheme.typography.labelSmall)
+                Text(text = "Harga: Rp${property.hargaSewa} / hari", style = MaterialTheme.typography.labelSmall)
+                Text(text = "Lokasi: ${property.lokasi}", style = MaterialTheme.typography.labelSmall)
             }
         }
     }

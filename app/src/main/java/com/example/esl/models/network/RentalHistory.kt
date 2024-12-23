@@ -50,7 +50,6 @@ class RentalViewModel : ViewModel() {
             try {
                 Log.d("RentalViewModel", "Starting API call...")
                 val response: Response<List<RentalHistory>> = apiService.getRentals()
-                Log.d("RentalViewModel", "Response received: ${response.raw()}")
                 if (response.isSuccessful) {
                     Log.d("RentalViewModel", "API Response: ${response.body()}")
                     _rentalData.value = response.body() ?: emptyList()
