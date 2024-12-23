@@ -69,7 +69,7 @@ fun SearchBar() {
     TextField(
         value = searchQuery,
         onValueChange = { searchQuery = it },
-        placeholder = { Text("Cari disini...") },
+        placeholder = { Text("Cari disini...") }, //search
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
