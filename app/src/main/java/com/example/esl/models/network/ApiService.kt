@@ -111,10 +111,10 @@ data class PenyewaanRequest(
 
 
 interface ApiService {
-    @POST("register")
+    @POST("api/auth/register")
     suspend fun register(@Body request: RegisterRequest): Response<RegisterResponse>
 
-    @POST("login")
+    @POST("api/auth/login")
     suspend fun login(@Body request: LoginRequest): AuthResponse
 
     // Property Endpoints
@@ -155,6 +155,7 @@ object RetrofitInstance {
     val api: ApiService by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
+            .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ApiService::class.java)

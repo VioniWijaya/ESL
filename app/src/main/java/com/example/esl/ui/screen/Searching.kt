@@ -1,6 +1,8 @@
 package com.example.esl.ui.screen
 
+
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,12 +14,23 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -25,17 +38,22 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.esl.models.local.entities.Property
+import com.example.esl.ui.component.BottomNavBar
 import com.example.esl.ui.component.Screen
+import com.example.esl.ui.theme.BarColor
 import com.example.esl.viewmodel.PropertyViewModel
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PropertyListScreen(
     modifier: Modifier = Modifier,
     viewModel: PropertyViewModel,
+  navController: NavController,
     onPropertyClick: (Int) -> Unit // Callback untuk navigasi ke halaman detail
 ) {
     val propertyList by viewModel.propertyList.collectAsState()
@@ -45,35 +63,69 @@ fun PropertyListScreen(
     LaunchedEffect(Unit) {
         viewModel.getAllProperties() // Pastikan ada fungsi untuk mendapatkan semua properti
     }
+    Scaffold(
+        topBar = {
+            TopAppBar(
 
-    when {
-        isLoading -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-                CircularProgressIndicator()
-            }
-        }
-        errorMessage != null -> {
-            Text(
-                text = errorMessage ?: "Error terjadi.",
-                modifier = Modifier.fillMaxSize(),
-                style = MaterialTheme.typography.labelSmall
+                title = { Text("Search Property") },
+                navigationIcon = {
+                    IconButton(onClick = {  }) { // Update onClick handler
+                        Icon(Icons.Default.ArrowBack, "Back")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = BarColor, // Warna biru
+                    titleContentColor = Color.White,
+                    navigationIconContentColor = Color.White,
+                    actionIconContentColor = Color.White
+                )
             )
-        }
-        propertyList != null -> {
-            LazyColumn {
-                items(propertyList!!) { property ->
-                    PropertyCard(property = property, onClick = { onPropertyClick(property.id_properti) })
+        },
+        bottomBar = { BottomNavBar(navController) }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF2ED4D8))
+                .padding(paddingValues)
+        )
+        when {
+            isLoading -> {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator()
                 }
             }
-        }
 
-        else -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "Tidak ada properti tersedia saat ini.", style = MaterialTheme.typography.bodyMedium)
+            errorMessage != null -> {
+                Text(
+                    text = errorMessage ?: "Error terjadi.",
+                    modifier = Modifier.fillMaxSize(),
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
+
+            propertyList != null -> {
+                LazyColumn {
+                    items(propertyList!!) { property ->
+                        PropertyCard(
+                            property = property,
+                            onClick = { onPropertyClick(property.id_properti) })
+                    }
+                }
+            }
+
+            else -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(
+                        text = "Tidak ada properti tersedia saat ini.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             }
         }
     }
 }
+
 
 @Composable
 fun PropertyCard(
@@ -116,5 +168,4 @@ fun PropertyCard(
 //            }
 //        }
 //    )
-
 

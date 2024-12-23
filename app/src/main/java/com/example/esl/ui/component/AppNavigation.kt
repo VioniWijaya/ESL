@@ -27,14 +27,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import com.example.esl.ui.Home
-import com.example.esl.viewmodel.PenyewaanViewModel
 import com.example.esl.viewmodel.PropertyViewModel
 import com.example.esl.viewmodel.UlasanViewModel
+import com.example.esl.ui.screen.ProfileScreen
+import com.example.esl.ui.screen.Register
+import com.example.esl.ui.screen.RiwayatScreen
+
 
 sealed class Screen(val route: String) {
     object Login : Screen("login")
     object Register : Screen("register")
     object Home : Screen("home")
+
     object Searching : Screen("searching")
     object DetailProperty : Screen("detail/{propertyId}") {
         fun createRoute(propertyId: Int) = "detail/$propertyId"
@@ -44,14 +48,16 @@ sealed class Screen(val route: String) {
     }
     object DaftarPenyewaan : Screen("daftar_penyewaan")
     object Ulasan : Screen("ulasan/{orderId}") {
-        fun createRoute(penyewaanId: Int) = "ulasan/$penyewaanId"
+        fun createRoute(orderId: Int): String = "ulasan/$orderId"
     }
 
+    object History : Screen("history")
+    object Profile : Screen("profile")
 }
 
 @Composable
 fun AppNavigation(navController: NavHostController) {
-    val navController = rememberNavController()
+//    val navController = rememberNavController()
     val propertyViewModel = viewModel<PropertyViewModel>()
 
     NavHost(navController = navController, startDestination = Screen.Login.route) {
@@ -88,6 +94,7 @@ fun AppNavigation(navController: NavHostController) {
             PropertyListScreen(
                 modifier = Modifier,
                 viewModel = propertyViewModel,
+                navController = navController,
                 onPropertyClick = { propertyId ->
                     navController.navigate(Screen.DetailProperty.createRoute(propertyId))
                 }
@@ -97,6 +104,25 @@ fun AppNavigation(navController: NavHostController) {
         // Halaman Home
         composable(Screen.Home.route) {
             Home(navController)
+        }
+        composable(Screen.Searching.route) {
+            PropertyListScreen(
+                modifier = Modifier, // Sesuai dengan parameter pertama
+                viewModel = propertyViewModel, // ViewModel yang sudah didefinisikan sebelumnya
+                navController = navController, // NavController untuk navigasi
+                onPropertyClick = { propertyId ->
+                    navController.navigate(Screen.DetailProperty.createRoute(propertyId))
+                }
+            )
+
+        }
+
+        composable(Screen.History.route) {
+            RiwayatScreen(navController)
+        }
+
+        composable(Screen.Profile.route) {
+            ProfileScreen(navController)
         }
 
         // Halaman Detail Property
@@ -135,31 +161,10 @@ fun AppNavigation(navController: NavHostController) {
             )
         }
 
-        // Halaman Daftar Pesanan Penyewaan
-        // Halaman Daftar Penyewaan Penyewaan
-        composable(Screen.DaftarPenyewaan.route) {
-            val viewModel: PenyewaanViewModel = viewModel()
-
-            // Ambil userId, misalnya dari sesi atau data lokal
-            val userId = 1 // Ganti dengan userId yang sesuai
-
-            // Panggil fungsi fetch data di ViewModel
-            LaunchedEffect(Unit) {
-                viewModel.fetchPenyewaanByUser(userId)
-            }
-
-            DaftarPenyewaanPage(
-                modifier = Modifier,
-                penyewaanList = viewModel.penyewaanList.value,
-                onUlasanClick = { orderId ->
-                    navController.navigate(Screen.Ulasan.createRoute(orderId))
-                },
-                onCancelClick = { orderId ->
-                    // Handle cancel logic
-                }
-            )
-        }
+//
         // Halaman Ulasan
+
+// Update the navigation route in AppNavigation
         composable(
             route = Screen.Ulasan.route,
             arguments = listOf(navArgument("orderId") { type = NavType.IntType })
@@ -168,13 +173,12 @@ fun AppNavigation(navController: NavHostController) {
             val ulasanViewModel: UlasanViewModel = viewModel()
 
             UlasanPage(
+                viewModel = ulasanViewModel,
+                penyewaanId = orderId,
                 onSubmit = { ulasanRequest ->
-                    // Update ulasanRequest untuk memasukkan orderId
-                    val updatedRequest = ulasanRequest.copy(
-                        id_penyewaan = orderId
-                    )
-                    ulasanViewModel.createUlasan(updatedRequest)
-                    navController.popBackStack()
+                    ulasanViewModel.createUlasan(ulasanRequest) {
+                        navController.popBackStack() // Kembali ke halaman sebelumnya
+                    }
                 },
                 initialRating = 0,
                 initialUlasan = ""
