@@ -45,8 +45,8 @@ fun BottomNavBar(navController: NavController, modifier: Modifier = Modifier) { 
             BottomNavItem(
                 icon = Icons.Default.Search,
                 label = "Search",
-                selected = currentRoute == "search",
-                onClick = { navController.navigate("search") }
+                selected = currentRoute == "searching",
+                onClick = { navController.navigate("searching") }
             )
             BottomNavItem(
                 icon = Icons.Default.List,

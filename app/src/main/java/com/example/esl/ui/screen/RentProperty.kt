@@ -8,7 +8,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.FileUpload
@@ -23,7 +22,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -37,12 +35,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import com.example.esl.ui.theme.BarColor
 import com.example.esl.ui.theme.ButtonColors
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.esl.ui.theme.ESLTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PemesananScreen() {
+fun PemesananScreen(modifier: Modifier = Modifier,propertyId: Int,
+                    onOrderSuccess: () -> Unit) {
     var durasi by remember { mutableStateOf("3 hari") }
     var mulai by remember { mutableStateOf("15.00 WIB") }
     var harga by remember { mutableStateOf("Rp. 250.000,-") }
@@ -69,7 +66,7 @@ fun PemesananScreen() {
                 .padding(innerPadding)
                 .background(Color(0xFFB2DFDB))
         ) {
-            DetailKendaraan()
+            DetailProperty()
             Spacer(modifier = Modifier.height(16.dp))
             FormField(label = "Durasi", value = durasi, onValueChange = { durasi = it })
             FormField(label = "Mulai", value = mulai, onValueChange = { mulai = it })
@@ -86,16 +83,14 @@ fun PemesananScreen() {
             )
             Spacer(modifier = Modifier.height(24.dp))
             PesanButton(
-                onClick = {
-                    // Handle pesan
-                }
+                onClick = onOrderSuccess
             )
         }
     }
 }
 
 @Composable
-fun DetailKendaraan() {
+fun DetailProperty() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -116,7 +111,7 @@ fun DetailKendaraan() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun FormField(label: String, value: String, onValueChange: (String) -> Unit) {
     Column {
@@ -203,10 +198,3 @@ fun PesanButton(onClick: () -> Unit) {
 }
 
 
-@Preview
-@Composable
-private fun PemesananPrev() {
-    ESLTheme {
-        PemesananScreen()
-    }
-}
