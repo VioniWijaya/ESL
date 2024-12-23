@@ -80,6 +80,36 @@ data class UlasanResponse(
     val media_ulasan: String?,
     val tanggal_input: String
 )
+
+data class PenyewaanResponse(
+    val id_penyewaan: Int,
+    val id_users: Int,
+    val id_properti: Int,
+    val tanggalMulai: String,
+    val tanggalAkhir: String,
+    val tanggalOrder: String,
+    val masaSewa: Int,
+    val status: String,
+    val properti: PropertyDetail,
+    val user: UserResponse
+)
+
+data class PropertyDetail(
+    val id_properti: Int,
+    val nama_properti: String,
+    val jenis_properti: String,
+    val hargaSewa: Int,
+    val lokasi: String
+)
+
+data class PenyewaanRequest(
+    val id_users: Int,
+    val id_properti: Int,
+    val tanggalMulai: String,
+    val tanggalAkhir: String
+)
+
+
 interface ApiService {
     @POST("api/auth/register")
     suspend fun register(@Body request: RegisterRequest): Response<RegisterResponse>
@@ -94,14 +124,24 @@ interface ApiService {
     @GET("api/properti/{id}")
     suspend fun getDetailProperti(@Path("id") id: Int): Response<PropertyResponse>
 
+    // Penyewaan Endpoints
+    @GET("api/penyewaan/user/{id_users}")
+    suspend fun getPenyewaanByUser(@Path("id_users") idUsers: Int): Response<List<PenyewaanResponse>>
+
+    @POST("api/penyewaan")
+    suspend fun createPenyewaan(@Body penyewaanRequest: PenyewaanRequest): Response<PenyewaanResponse>
+
     @POST("api/ulasan")
     suspend fun createUlasan(@Body ulasanRequest: UlasanRequest): Response<UlasanResponse>
 
-    @PUT("ulasan/{id}")
+    @PUT("api/ulasan/{id}")
     suspend fun updateUlasan(
         @Path("id") id: Int,
         @Body ulasanRequest: UlasanRequest
     ): Response<UlasanResponse>
+
+    @GET("api/ulasan/penyewaan/{id_penyewaan}")
+    suspend fun getUlasanByPenyewaan(@Path("id_penyewaan") idPenyewaan: Int): Response<List<UlasanResponse>>
 }
 
 object RetrofitInstance {

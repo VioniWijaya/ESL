@@ -94,7 +94,7 @@ data class Review(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun DetailProperty(modifier: Modifier = Modifier, viewModel: PropertyViewModel, propertyId: Int,  onNavigateBack: () -> Unit) {
+fun DetailProperty(modifier: Modifier = Modifier, viewModel: PropertyViewModel, propertyId: Int,  onNavigateBack: () -> Unit,  onRentClick: () -> Unit) {
     var isFavorite by remember { mutableStateOf(false) }
     val property by viewModel.propertyDetail.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -147,7 +147,7 @@ fun DetailProperty(modifier: Modifier = Modifier, viewModel: PropertyViewModel, 
                 ) {
 //
                     OutlinedButton(
-                        onClick = { /* Handle buy now */ },
+                        onClick = onRentClick,
                         modifier = Modifier
                             .weight(1f).padding(start = 8.dp),
                         colors = ButtonDefaults.buttonColors(
@@ -232,10 +232,6 @@ fun DetailContent(property: Property) {
         listOf(
             VehicleImage(R.drawable.toyota_avanza, "Tampak Depan"),
             VehicleImage(R.drawable.toyota_avanza1, "Tampak Belakang"),
-//            VehicleImage("https://example.com/vehicle2.jpg", "Tampak Samping"),
-//            VehicleImage("https://example.com/vehicle3.jpg", "Tampak Belakang"),
-//            VehicleImage("https://example.com/vehicle4.jpg", "Interior Depan"),
-//            VehicleImage("https://example.com/vehicle5.jpg", "Interior Belakang")
         )
     }
             Column(
@@ -397,7 +393,7 @@ fun DetailContent(property: Property) {
                                 .weight(1f)
                         ) {
                             Text(
-                                "Budi Santoso",
+                                property.pemilik,
                                 fontWeight = FontWeight.Medium
                             )
                             Row(
@@ -427,23 +423,8 @@ fun DetailContent(property: Property) {
                         fontWeight = FontWeight.Medium
                     )
                     Text(
-                        """
-                    • Tahun: 2023
-                    • Transmisi: Automatic
-                    • Kapasitas: 7 Penumpang
-                    • Bahan Bakar: Bensin
-                    • Fitur: AC, Audio, USB Port, Bluetooth
-                    
-                    Syarat Sewa:
-                    • KTP
-                    • SIM A
-                    • Deposit Rp 500.000
-                    
-                    Termasuk:
-                    • Asuransi
-                    • Perawatan rutin
-                    • Support 24 jam
-                    """.trimIndent()
+                        property.deskripsi
+                            .trimIndent()
                     )
 
                     Divider(modifier = Modifier.padding(vertical = 16.dp))

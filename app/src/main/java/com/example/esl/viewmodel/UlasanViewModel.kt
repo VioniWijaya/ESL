@@ -12,6 +12,10 @@ class UlasanViewModel(private val repository: UlasanRepository) : ViewModel() {
     val ulasanResponse = MutableLiveData<UlasanResponse?>()
     val error = MutableLiveData<String?>()
 
+    // Tambahkan userId dan penyewaanId jika diperlukan
+    val userId = MutableLiveData<Int?>()
+    val penyewaanId = MutableLiveData<Int?>()
+
     fun createUlasan(ulasanRequest: UlasanRequest) {
         viewModelScope.launch {
             val result = repository.createUlasan(ulasanRequest)

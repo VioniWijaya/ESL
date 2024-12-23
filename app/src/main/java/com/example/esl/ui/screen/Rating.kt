@@ -2,11 +2,13 @@ package com.example.esl.ui.screen
 
 import android.Manifest
 import android.net.Uri
+import android.widget.Toast
 import android.widget.VideoView
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,6 +38,7 @@ import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -43,8 +46,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.FileProvider
 import com.example.esl.models.network.UlasanRequest
-//import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.example.esl.ui.theme.BackgroundColor
+import com.example.esl.viewmodel.UlasanViewModel
 import java.io.File
 
 //import java.util.jar.Manifest
@@ -76,15 +80,27 @@ fun Rating(modifier: Modifier = Modifier,
 
 @Composable
 fun UlasanPage(
+    viewModel: UlasanViewModel = viewModel(),
     onSubmit: (UlasanRequest) -> Unit,
     initialUlasan: String = "",
     initialRating: Int = 0
 ) {
+    // Periksa bahwa userId dan penyewaanId ada dan bisa di-observe
+    var userId by remember { mutableStateOf<Int?>(null) }
+    var penyewaanId by remember { mutableStateOf<Int?>(null) }
+
+    LaunchedEffect(viewModel.userId) {
+        viewModel.userId.observeForever { userId = it }
+    }
+
+    LaunchedEffect(viewModel.penyewaanId) {
+        viewModel.penyewaanId.observeForever { penyewaanId = it }
+    }
     var ulasan by remember { mutableStateOf(initialUlasan) }
     var rating by remember { mutableStateOf(initialRating) }
     var photoUri by remember { mutableStateOf<Uri?>(null) }
-    var videoUri by remember { mutableStateOf<Uri?>(null) }
-
+//    var videoUri by remember { mutableStateOf<Uri?>(null) }
+    var showToast by remember { mutableStateOf(false) }
     // Temporary file for camera output
     val context = LocalContext.current
     val photoFile = remember {
@@ -113,11 +129,11 @@ fun UlasanPage(
         }
     }
 
-    val videoCameraLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakeVideo()
-    ) { uri ->
-        videoUri = uri
-    }
+//    val videoCameraLauncher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.TakeVideo()
+//    ) { uri ->
+//        videoUri = uri
+//    }
 
     Column(
         modifier = Modifier
@@ -147,9 +163,9 @@ fun UlasanPage(
             Button(onClick = { photoCameraLauncher.launch(photoUriForCamera) }) {
                 Text("Ambil Foto")
             }
-            Button(onClick = { videoCameraLauncher.launch(videoUriForCamera) }) {
-                Text("Ambil Video")
-            }
+//            Button(onClick = { videoCameraLauncher.launch(videoUriForCamera) }) {
+//                Text("Ambil Video")
+//            }
         }
 
         // Preview Photo and Video
@@ -164,38 +180,50 @@ fun UlasanPage(
             )
         }
 
-        videoUri?.let {
-            Text("Video diambil:")
-            AndroidView(
-                factory = { context ->
-                    VideoView(context).apply {
-                        setVideoURI(it)
-                        start()
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-            )
-        }
+//        videoUri?.let {
+//            Text("Video diambil:")
+//            AndroidView(
+//                factory = { context ->
+//                    VideoView(context).apply {
+//                        setVideoURI(it)
+//                        start()
+//                    }
+//                },
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(200.dp)
+//            )
+//        }
 
         Spacer(Modifier.height(16.dp))
 
         // Submit Button
         Button(
             onClick = {
-                val request = UlasanRequest(
-                    id_users = 1, // Replace with actual user ID
-                    id_penyewaan = 1, // Replace with actual penyewaan ID
-                    ulasan = ulasan,
-                    rating = rating,
-                    media_ulasan = photoUri?.toString() ?: videoUri?.toString()
-                )
-                onSubmit(request)
+                if (userId != null && penyewaanId != null) {
+                    val request = UlasanRequest(
+                        id_users = userId!!,
+                        id_penyewaan = penyewaanId!!,
+                        ulasan = ulasan,
+                        rating = rating,
+                        media_ulasan = photoUri?.toString()
+                    )
+                    onSubmit(request)
+                } else {
+                    showToast = true
+                }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Kirim Ulasan")
+        }
+
+        // Efek samping untuk Toast
+        if (showToast) {
+            LaunchedEffect(showToast) {
+                Toast.makeText(context, "Data belum tersedia", Toast.LENGTH_SHORT).show()
+                showToast = false
+            }
         }
     }
 }
