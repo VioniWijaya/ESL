@@ -53,7 +53,7 @@ import com.example.esl.ui.theme.ESLTheme
 import kotlinx.coroutines.launch
 
 @Composable
-fun Register(modifier: Modifier = Modifier, navController: NavController, onRegisterSuccess: () -> Unit) {
+fun Register(modifier: Modifier = Modifier, navController: NavController, onRegisterSuccess: () -> Unit, onLoginClick: () -> Unit) {
     val coroutineScope = rememberCoroutineScope()
 
     var nama by remember { mutableStateOf("") }

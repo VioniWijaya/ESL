@@ -20,6 +20,7 @@ import androidx.navigation.NavController
 import com.example.esl.models.network.RentalHistory
 import com.example.esl.models.network.RentalViewModel
 import com.example.esl.ui.component.BottomNavBar
+import com.example.esl.ui.component.TopButtonBar
 
 
 // Screen Riwayat Penyewaan
@@ -27,7 +28,6 @@ import com.example.esl.ui.component.BottomNavBar
 fun RiwayatScreen(navController: NavController, viewModel: RentalViewModel = viewModel()) {
     val rentalData by viewModel.rentalData.collectAsState()
 
-    // Load data rentals ketika screen muncul
     LaunchedEffect(Unit) {
         viewModel.loadRentals()
     }
@@ -52,6 +52,8 @@ fun RiwayatScreen(navController: NavController, viewModel: RentalViewModel = vie
                     textAlign = TextAlign.Center,
                     color = Color.White
                 )
+
+                TopButtonBar(navController)
 
                 LazyColumn(
                     modifier = Modifier.fillMaxSize()
@@ -97,6 +99,18 @@ fun RentalCard(rental: RentalHistory) {
                 fontSize = 14.sp,
                 color = Color.Gray
             )
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = {
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF007B7F),
+                    contentColor = Color.White
+                )
+            ) {
+                Text(text = "Beri Ulasan")
+            }
         }
     }
 }
