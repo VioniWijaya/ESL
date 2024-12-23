@@ -71,12 +71,13 @@ fun AppNavigation(navController: NavHostController) {
         composable(Screen.Register.route) {
             Register(
                 navController = navController,
+                onLoginClick = { navController.navigate(Screen.Login.route) },
                 onRegisterSuccess = {
                     println("Navigating to Searching Screen")
                     // Setelah register berhasil, navigasi ke halaman property list
-                    navController.navigate(Screen.Searching.route) {
+                    navController.navigate(Screen.Login.route) {
                         // Hapus semua screen sebelumnya dari back stack
-                        popUpTo(Screen.Login.route) { inclusive = true }
+//                        popUpTo(Screen.Login.route) { inclusive = true }
                     }
                 }
             )

@@ -18,7 +18,7 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
-const val BASE_URL = "http://192.168.19.66:3000/"
+const val BASE_URL = "http://192.168.1.14:3000/"
 
 data class RegisterRequest(
     val nama: String,

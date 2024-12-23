@@ -44,7 +44,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.esl.R
 import com.example.esl.models.network.RegisterRequest
 import com.example.esl.models.network.RetrofitInstance
 import com.example.esl.ui.theme.BackgroundColor
@@ -53,7 +52,7 @@ import com.example.esl.ui.theme.ESLTheme
 import kotlinx.coroutines.launch
 
 @Composable
-fun Register(modifier: Modifier = Modifier, navController: NavController, onRegisterSuccess: () -> Unit) {
+fun Register(modifier: Modifier = Modifier, navController: NavController, onRegisterSuccess: () -> Unit, onLoginClick: () -> Unit) {
     val coroutineScope = rememberCoroutineScope()
 
     var nama by remember { mutableStateOf("") }
