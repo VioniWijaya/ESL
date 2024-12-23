@@ -7,21 +7,29 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.esl.models.network.RentalHistory
 import com.example.esl.models.network.RentalViewModel
 import com.example.esl.ui.component.BottomNavBar
 
+
+// Screen Riwayat Penyewaan
 @Composable
 fun RiwayatScreen(navController: NavController, viewModel: RentalViewModel = viewModel()) {
-    val rentalData by remember { mutableStateOf(viewModel.rentalData) }
+    val rentalData by viewModel.rentalData.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadRentals()
+    }
 
     Scaffold(
         bottomBar = { BottomNavBar(navController) }
@@ -74,17 +82,17 @@ fun RentalCard(rental: RentalHistory) {
                 color = Color.Black
             )
             Text(
-                text = "Nama: ${rental.name}",
+                text = "Nama Properti: ${rental.nama_properti}",
                 fontSize = 14.sp,
                 color = Color.Gray
             )
             Text(
-                text = "Tanggal: ${rental.date}",
+                text = "Tanggal Order: ${rental.tanggalOrder}",
                 fontSize = 14.sp,
                 color = Color.Gray
             )
             Text(
-                text = "Pemilik: ${rental.owner}",
+                text = "Pemilik: ${rental.pemilik}",
                 fontSize = 14.sp,
                 color = Color.Gray
             )
