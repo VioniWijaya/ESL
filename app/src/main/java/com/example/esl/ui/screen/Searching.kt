@@ -1,5 +1,6 @@
 package com.example.esl.ui.screen
 
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -30,12 +31,14 @@ import androidx.navigation.NavController
 import com.example.esl.models.local.entities.Property
 import com.example.esl.ui.component.Screen
 import com.example.esl.viewmodel.PropertyViewModel
+import androidx.navigation.NavController
 
 
 @Composable
 fun PropertyListScreen(
     modifier: Modifier = Modifier,
     viewModel: PropertyViewModel,
+  navController: NavController,
     onPropertyClick: (Int) -> Unit // Callback untuk navigasi ke halaman detail
 ) {
     val propertyList by viewModel.propertyList.collectAsState()
@@ -116,5 +119,4 @@ fun PropertyCard(
 //            }
 //        }
 //    )
-
 

@@ -40,25 +40,25 @@ fun BottomNavBar(navController: NavController, modifier: Modifier = Modifier) { 
                 icon = Icons.Default.Home,
                 label = "Home",
                 selected = currentRoute == "home",
-                onClick = { navController.navigate("home") }
+                onClick = { navController.navigate(Screen.Home.route) }
             )
             BottomNavItem(
                 icon = Icons.Default.Search,
                 label = "Search",
                 selected = currentRoute == "search",
-                onClick = { navController.navigate("search") }
+                onClick = { navController.navigate(Screen.Search.route) }
             )
             BottomNavItem(
                 icon = Icons.Default.List,
                 label = "History",
                 selected = currentRoute == "history",
-                onClick = { navController.navigate("history") }
+                onClick = { navController.navigate(Screen.History.route) }
             )
             BottomNavItem(
                 icon = Icons.Default.Person,
                 label = "Profile",
                 selected = currentRoute == "profile",
-                onClick = { navController.navigate("profile") }
+                onClick = { navController.navigate(Screen.Profile.route) }
             )
         }
     }

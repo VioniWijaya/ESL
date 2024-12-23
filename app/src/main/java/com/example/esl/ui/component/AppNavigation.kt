@@ -30,11 +30,16 @@ import com.example.esl.ui.Home
 import com.example.esl.viewmodel.PenyewaanViewModel
 import com.example.esl.viewmodel.PropertyViewModel
 import com.example.esl.viewmodel.UlasanViewModel
+import com.example.esl.ui.screen.ProfileScreen
+import com.example.esl.ui.screen.Register
+import com.example.esl.ui.screen.RiwayatScreen
+import com.example.esl.ui.screen.SearchScreen
 
 sealed class Screen(val route: String) {
     object Login : Screen("login")
     object Register : Screen("register")
     object Home : Screen("home")
+
     object Searching : Screen("searching")
     object DetailProperty : Screen("detail/{propertyId}") {
         fun createRoute(propertyId: Int) = "detail/$propertyId"
@@ -47,6 +52,8 @@ sealed class Screen(val route: String) {
         fun createRoute(penyewaanId: Int) = "ulasan/$penyewaanId"
     }
 
+    object History : Screen("history")
+    object Profile : Screen("profile")
 }
 
 @Composable
@@ -96,6 +103,17 @@ fun AppNavigation(navController: NavHostController) {
         // Halaman Home
         composable(Screen.Home.route) {
             Home(navController)
+        }
+        composable(Screen.Searching.route) {
+            PropertyListScreen(navController)
+        }
+
+        composable(Screen.History.route) {
+            RiwayatScreen(navController)
+        }
+
+        composable(Screen.Profile.route) {
+            ProfileScreen(navController)
         }
 
         // Halaman Detail Property
