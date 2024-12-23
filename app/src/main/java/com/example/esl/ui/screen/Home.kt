@@ -1,112 +1,102 @@
-package com.example.esl.ui.screen
+package com.example.esl.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.runtime.Composable
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.unit.dp
-import com.example.esl.models.local.entities.User
-import com.example.esl.ui.theme.ESLTheme
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.esl.R
+import com.example.esl.ui.component.BottomNavBar
 
 @Composable
-fun Home() {
+fun Home(navController: NavController) {
     Scaffold(
-        bottomBar = {
-//            BottomNavBar()
-        }
-    ) { paddingValues ->
-        Column(
+        bottomBar = { BottomNavBar(navController = navController) }
+    ) { innerPadding ->
+        // Box untuk memberikan padding dari Scaffold
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp)
+                .background(Color(0xFFB2EBF2))
+                .padding(innerPadding)
         ) {
-            GreetingSection()
-            Spacer(modifier = Modifier.height(16.dp))
-            ImageSection()
-        }
-    }
-}
-
-@Composable
-fun GreetingSection() {
-    Column {
-        Text(
-            text = "Selamat Datang, Wisatawan!",
-            style = MaterialTheme.typography.headlineSmall,
-            color = Color.White,
-        )
-        Text(
-            text = "Mari Eksplor Keindahan\nDanau Singkarak Bersama dengan ESL~",
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.White,
-        )
-    }
-}
-
-@Composable
-fun ImageSection() {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        repeat(3) {
-            Box(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(16f / 9f)
-                    .padding(horizontal = 4.dp),
-                contentAlignment = Alignment.Center
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .background(Color(0xFF40E0D0))
+                    .padding(16.dp)
             ) {
-                Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = Color.LightGray
+
+                Text(
+                    text = "Selamat Datang!",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text(
+                    text = "Mari Eksplor Keindahan\nDanau Singkarak Bersama dengan ESL~",
+                    fontSize = 16.sp,
+                    color = Color.White,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                // Bagian Daftar Gambar
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            painter = painterResource(android.R.drawable.ic_menu_gallery),
-                            contentDescription = "Placeholder",
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier.size(60.dp),
-                            colorFilter = ColorFilter.tint(Color.Gray)
-                        )
-                    }
+                    ImageCard(imageResId = R.drawable.danausingkarak, title = "Danau Singkarak")
+                    ImageCard(imageResId = R.drawable.tourdesingkarak, title = "Tour de Singkarak")
+                    ImageCard(imageResId = R.drawable.danau5, title = "Festival 5 Danau Kabupaten Solok")
                 }
             }
         }
     }
 }
 
-
-@Preview
 @Composable
-private fun HomePrev() {
-    ESLTheme {
-        Home()
-    }
+fun ImageCard(imageResId: Int, title: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Cyan, shape = RoundedCornerShape(12.dp))
+            .padding(8.dp), // Padding di dalam card
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(id = imageResId),
+            contentDescription = title,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(150.dp)
+                .clip(RoundedCornerShape(12.dp))
+        )
 
+        Text(
+            text = title,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color.White,
+            modifier = Modifier
+                .padding(top = 8.dp)
+        )
+    }
 }

@@ -11,11 +11,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.esl.repository.UlasanRepository
 import com.example.esl.ui.LoginScreen
 import com.example.esl.ui.screen.DaftarPenyewaanPage
 import com.example.esl.ui.screen.DetailProperty
-import com.example.esl.ui.screen.Home
+//import com.example.esl.ui.screen.Home
 import com.example.esl.ui.screen.PemesananScreen
 import com.example.esl.ui.screen.PropertyListScreen
 import com.example.esl.ui.screen.Register
@@ -26,6 +25,8 @@ import androidx.compose.runtime.getValue
 import android.widget.Toast
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavHostController
+import com.example.esl.ui.Home
 import com.example.esl.viewmodel.PenyewaanViewModel
 import com.example.esl.viewmodel.PropertyViewModel
 import com.example.esl.viewmodel.UlasanViewModel
@@ -49,7 +50,7 @@ sealed class Screen(val route: String) {
 }
 
 @Composable
-fun AppNavigation() {
+fun AppNavigation(navController: NavHostController) {
     val navController = rememberNavController()
     val propertyViewModel = viewModel<PropertyViewModel>()
 
@@ -94,7 +95,7 @@ fun AppNavigation() {
 
         // Halaman Home
         composable(Screen.Home.route) {
-            Home()
+            Home(navController)
         }
 
         // Halaman Detail Property
@@ -178,6 +179,5 @@ fun AppNavigation() {
                 initialUlasan = ""
             )
         }
-
     }
 }
