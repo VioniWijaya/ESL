@@ -95,6 +95,34 @@ fun StatusCard(status: RentalStatus) {
                 fontSize = 14.sp,
                 color = Color.Gray
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Button(
+                    onClick = { /* TODO: Add Cancel Functionality */ },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                ) {
+                    Text(text = "Cancel", color = Color.White)
+                }
+
+                Button(
+                    onClick = { /* TODO: Add Reschedule Functionality */ },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)
+                ) {
+                    Text(text = "Reschedule", color = Color.Black)
+                }
+
+                Button(
+                    onClick = { /* TODO: Add Report Functionality */ },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+                ) {
+                    Text(text = "Laporkan", color = Color.White)
+                }
+            }
         }
     }
 }
