@@ -44,7 +44,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.esl.R
 import com.example.esl.models.network.RegisterRequest
 import com.example.esl.models.network.RetrofitInstance
 import com.example.esl.ui.theme.BackgroundColor
