@@ -78,9 +78,6 @@ fun AppNavigation(navController: NavHostController) {
                         // Hapus semua screen sebelumnya dari back stack
 //                        popUpTo(Screen.Login.route) { inclusive = true }
                     }
-                },
-                onLoginClick = {
-                    navController.popBackStack(Screen.Login.route, inclusive = false)
                 }
             )
         }
@@ -132,9 +129,6 @@ fun AppNavigation(navController: NavHostController) {
             RiwayatScreen(navController)
         }
 
-        composable(Screen.Profile.route) {
-            ProfileScreen(navController)
-        }
 
         // Halaman Detail Property
         composable(
@@ -173,28 +167,7 @@ fun AppNavigation(navController: NavHostController) {
         }
 
 
-        composable(Screen.DaftarPenyewaan.route) {
-            val viewModel: PenyewaanViewModel = viewModel()
 
-            // Ambil userId, misalnya dari sesi atau data lokal
-            val userId = 1 // Ganti dengan userId yang sesuai
-
-            // Panggil fungsi fetch data di ViewModel
-            LaunchedEffect(Unit) {
-                viewModel.fetchPenyewaanByUser(userId)
-            }
-
-            DaftarPenyewaanPage(
-                modifier = Modifier,
-                penyewaanList = viewModel.penyewaanList.value,
-                onUlasanClick = { orderId ->
-                    navController.navigate(Screen.Ulasan.createRoute(orderId))
-                },
-                onCancelClick = { orderId ->
-                    // Handle cancel logic
-                }
-            )
-        }
         // Halaman Ulasan
 
 // Update the navigation route in AppNavigation

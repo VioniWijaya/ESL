@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.esl.models.local.entities.Property
 import com.example.esl.ui.component.BottomNavBar
 import com.example.esl.ui.component.Screen
@@ -52,7 +53,7 @@ import com.example.esl.viewmodel.PropertyViewModel
 fun PropertyListScreen(
     modifier: Modifier = Modifier,
     viewModel: PropertyViewModel,
-  navController: NavController,
+    navController: NavController,
     onPropertyClick: (Int) -> Unit // Callback untuk navigasi ke halaman detail
 ) {
     val propertyList by viewModel.propertyList.collectAsState()
