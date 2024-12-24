@@ -3,6 +3,7 @@ package com.example.esl.ui.component
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -52,6 +53,7 @@ sealed class Screen(val route: String) {
 @Composable
 fun AppNavigation(navController: NavHostController) {
     val propertyViewModel = viewModel<PropertyViewModel>()
+    val context = LocalContext.current
 
     NavHost(navController = navController, startDestination = Screen.Login.route) {
         // Halaman Login
@@ -62,7 +64,8 @@ fun AppNavigation(navController: NavHostController) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
                 },
-                onRegisterClick = { navController.navigate(Screen.Register.route) }
+                onRegisterClick = { navController.navigate(Screen.Register.route) },
+                context = context
             )
         }
 
@@ -106,7 +109,7 @@ fun AppNavigation(navController: NavHostController) {
 
 
         composable(Screen.History.route) {
-            RiwayatScreen(navController)
+            RiwayatScreen(navController, context = context)
 
         }
 

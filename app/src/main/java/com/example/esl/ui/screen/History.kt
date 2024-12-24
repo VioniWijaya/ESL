@@ -1,6 +1,7 @@
 package com.example.esl.ui.screen
 
-import android.util.Log
+import android.content.Context
+import android.content.SharedPreferences
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,7 +16,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.esl.models.network.RentalHistory
@@ -23,17 +23,26 @@ import com.example.esl.models.network.RentalViewModel
 import com.example.esl.ui.component.BottomNavBar
 import com.example.esl.ui.component.Screen
 import com.example.esl.ui.component.TopButtonBar
+import kotlinx.coroutines.launch
 
-
-// Screen Riwayat Penyewaan
+// Screen Riwayat Penyewaan dengan logika langsung di dalam Composable
 @Composable
-fun RiwayatScreen(navController: NavController, viewModel: RentalViewModel = viewModel()) {
-    val rentalData by viewModel.rentalData.collectAsState()
+fun RiwayatScreen(navController: NavController, context: Context) {
+    val viewModel: RentalViewModel = viewModel() // Inisialisasi ViewModel
+    val rentalData by viewModel.rentalData.collectAsState() // Mengamati data rental
 
+    // Mengambil token dari SharedPreferences dan memuat data rental
     LaunchedEffect(Unit) {
-        viewModel.loadRentals()
+        val sharedPreferences: SharedPreferences =
+            context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val token = sharedPreferences.getString("jwt_token", null)
+
+        if (token != null) {
+            viewModel.loadRentals("Bearer $token") // Memanggil fungsi loadRentals
+        }
     }
 
+    // Layout utama
     Scaffold(
         bottomBar = { BottomNavBar(navController) }
     ) { innerPadding ->
@@ -57,6 +66,7 @@ fun RiwayatScreen(navController: NavController, viewModel: RentalViewModel = vie
 
                 TopButtonBar(navController)
 
+                // Tampilkan daftar rental
                 LazyColumn(
                     modifier = Modifier.fillMaxSize()
                 ) {
