@@ -60,47 +60,86 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
+import com.example.esl.ui.theme.BarColor
 
-
-//import java.util.jar.Manifest
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UlasanPage(
     viewModel: UlasanViewModel,
     penyewaanId: Int,
     onSubmit: (UlasanRequest) -> Unit,
+    onNavigateBack: () -> Unit,
     initialRating: Int,
     initialUlasan: String
 ) {
     var rating by remember { mutableStateOf(initialRating) }
     var ulasan by remember { mutableStateOf(initialUlasan) }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
-
     val context = LocalContext.current
 
+    // Launcher untuk membuka kamera
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview()
     ) { bitmap ->
-        bitmap?.let {
-            val uri = saveBitmapToUri(context, it)
-            imageUri = uri
+        if (bitmap != null) {
+            val uri = saveBitmapToUri(context, bitmap)
+            if (uri != null) {
+                imageUri = uri
+            } else {
+                Toast.makeText(context, "Gagal menyimpan foto.", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Toast.makeText(context, "Gagal mengambil foto.", Toast.LENGTH_SHORT).show()
         }
     }
 
+
+    // Launcher untuk memilih foto dari galeri
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
-        uri?.let { imageUri = it }
+        if (uri != null) {
+            imageUri = uri
+        } else {
+            Toast.makeText(context, "Gagal memilih foto.", Toast.LENGTH_SHORT).show()
+        }
     }
 
-    Scaffold() { innerPadding ->
+    Scaffold(
+        topBar = {
+            TopAppBar(
+
+                title = { Text("Beri Ulasan") },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) { // Update onClick handler
+                        Icon(Icons.Default.ArrowBack, "Back")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = BarColor, // Warna biru
+                    titleContentColor = Color.White,
+                    navigationIconContentColor = Color.White,
+                    actionIconContentColor = Color.White
+                )
+            )
+       }
+    ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color(0xFF2ED4D8))
-                .padding(innerPadding)
+                .padding(paddingValues)
         ) {
             Column(
                 modifier = Modifier
@@ -123,25 +162,38 @@ fun UlasanPage(
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    OutlinedButton(onClick = { cameraLauncher.launch() }) {
+                        Text("Ambil Foto")
+                    }
 
-                Button(onClick = { cameraLauncher.launch() }) {
-                    Text("Ambil Foto")
+                    OutlinedButton(onClick = { galleryLauncher.launch("image/*") }) {
+                        Text("Pilih dari Galeri")
+                    }
                 }
 
-                Button(onClick = { galleryLauncher.launch("image/*") }) {
-                    Text("Pilih dari Galeri")
-                }
-
-                imageUri?.let {
-                    Spacer(modifier = Modifier.height(16.dp))
+                // Tampilkan gambar jika URI tersedia
+                imageUri?.let { uri ->
                     Image(
-                        painter = rememberAsyncImagePainter(it),
-                        contentDescription = null,
+                        painter = rememberAsyncImagePainter(uri),
+                        contentDescription = "Preview Foto",
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(200.dp)
                     )
+                } ?: run {
+                    Text(
+                        text = "Tidak ada foto yang diambil.",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        color = Color.White
+                    )
                 }
+
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -154,7 +206,8 @@ fun UlasanPage(
                             id_users = 1,
                             id_penyewaan = penyewaanId,
                             ulasan = ulasan,
-                            rating = rating
+                            rating = rating,
+                            media_ulasan = imageUri?.toString() // Simpan URI sebagai string
                         )
                         onSubmit(ulasanRequest)
                     }) {
@@ -169,15 +222,20 @@ fun UlasanPage(
     }
 }
 
-
-// Fungsi untuk menyimpan Bitmap sebagai URI
-fun saveBitmapToUri(context: Context, bitmap: Bitmap): Uri {
-    val file = File(context.cacheDir, "temp_image_${System.currentTimeMillis()}.jpg")
-    file.outputStream().use {
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
+// Fungsi untuk menyimpan Bitmap sebagai file dan mengembalikan URI-nya
+fun saveBitmapToUri(context: Context, bitmap: Bitmap): Uri? {
+    return try {
+        val file = File(context.cacheDir, "temp_image_${System.currentTimeMillis()}.jpg")
+        file.outputStream().use {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
+        }
+        FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
     }
-    return FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
 }
+
 
 @Composable
 fun RatingBar(rating: Int, onRatingChanged: (Int) -> Unit) {
@@ -187,14 +245,12 @@ fun RatingBar(rating: Int, onRatingChanged: (Int) -> Unit) {
                 imageVector = if (star <= rating) Icons.Filled.Star else Icons.Filled.StarBorder,
                 contentDescription = null,
                 modifier = Modifier
-                    .size(65.dp)
+                    .size(66.dp)
                     .clickable { onRatingChanged(star) },
                 tint = if (star <= rating) Color.Yellow else Color.White
             )
         }
     }
 }
-
-
 
 

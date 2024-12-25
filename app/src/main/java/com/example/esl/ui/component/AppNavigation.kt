@@ -181,6 +181,9 @@ fun AppNavigation(navController: NavHostController) {
             UlasanPage(
                 viewModel = ulasanViewModel,
                 penyewaanId = orderId,
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
                 onSubmit = { ulasanRequest ->
                     ulasanViewModel.createUlasan(ulasanRequest) {
                         navController.popBackStack() // Kembali ke halaman sebelumnya
