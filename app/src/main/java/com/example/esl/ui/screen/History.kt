@@ -25,11 +25,10 @@ import com.example.esl.ui.component.Screen
 import com.example.esl.ui.component.TopButtonBar
 import kotlinx.coroutines.launch
 
-// Screen Riwayat Penyewaan dengan logika langsung di dalam Composable
 @Composable
 fun RiwayatScreen(navController: NavController, context: Context) {
-    val viewModel: RentalViewModel = viewModel() // Inisialisasi ViewModel
-    val rentalData by viewModel.rentalData.collectAsState() // Mengamati data rental
+    val viewModel: RentalViewModel = viewModel()
+    val rentalData by viewModel.rentalData.collectAsState()
 
     // Mengambil token dari SharedPreferences dan memuat data rental
     LaunchedEffect(Unit) {

@@ -1,5 +1,7 @@
 package com.example.esl.ui.screen
 
+import android.content.Context
+import android.content.SharedPreferences
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,11 +23,17 @@ import com.example.esl.ui.component.BottomNavBar
 import com.example.esl.ui.component.TopButtonBar
 
 @Composable
-fun StatusScreen(navController: NavController, viewModel: StatusViewModel = viewModel()) {
+fun StatusScreen(navController: NavController, context: Context) {
+    val viewModel: StatusViewModel = viewModel()
     val statusData by viewModel.statusData.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.loadStatus()
+        val sharedPreferences: SharedPreferences =
+            context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val token = sharedPreferences.getString("jwt_token", null)
+        if (token != null) {
+            viewModel.loadStatus("Bearer $token")
+        }
     }
 
     Scaffold(
@@ -55,7 +63,7 @@ fun StatusScreen(navController: NavController, viewModel: StatusViewModel = view
                     modifier = Modifier.fillMaxSize()
                 ) {
                     items(statusData) { rental ->
-                        StatusCard(rental)
+                        StatusCard(status = rental, navController = navController)
                     }
                 }
             }
@@ -64,7 +72,7 @@ fun StatusScreen(navController: NavController, viewModel: StatusViewModel = view
 }
 
 @Composable
-fun StatusCard(status: RentalStatus) {
+fun StatusCard(status: RentalStatus, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -110,7 +118,7 @@ fun StatusCard(status: RentalStatus) {
                 }
 
                 Button(
-                    onClick = { /* TODO: Add Reschedule Functionality */ },
+                    onClick = { /* TODO: Add Report Functionality */},
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)
                 ) {
                     Text(text = "Reschedule", color = Color.Black)
@@ -120,7 +128,7 @@ fun StatusCard(status: RentalStatus) {
                     onClick = { /* TODO: Add Report Functionality */ },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
                 ) {
-                    Text(text = "Laporkan", color = Color.White)
+                    Text(text = "Lapor", color = Color.White)
                 }
             }
         }

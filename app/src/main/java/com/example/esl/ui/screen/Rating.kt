@@ -50,7 +50,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.FileProvider
 import androidx.navigation.NavController
 import com.example.esl.models.network.UlasanRequest
-import coil.compose.rememberAsyncImagePainter
 import com.example.esl.ui.component.BottomNavBar
 import com.example.esl.ui.theme.BackgroundColor
 import com.example.esl.viewmodel.UlasanViewModel
@@ -132,16 +131,16 @@ fun UlasanPage(
                     Text("Pilih dari Galeri")
                 }
 
-                imageUri?.let {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Image(
-                        painter = rememberAsyncImagePainter(it),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                    )
-                }
+//                imageUri?.let {
+//                    Spacer(modifier = Modifier.height(16.dp))
+//                    Image(
+//                        painter = rememberImagePainter(data = it),
+//                        contentDescription = null,
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .height(200.dp)
+//                    )
+//                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
