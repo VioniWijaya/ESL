@@ -10,6 +10,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Header
 
 // Data model untuk status rental
 data class RentalStatus(
@@ -19,10 +20,9 @@ data class RentalStatus(
     val nama_properti: String
 )
 
-// Interface API untuk mendapatkan data status
 interface StatusApi {
     @GET("api/status")
-    suspend fun getStatus(): Response<List<RentalStatus>>
+    suspend fun getStatus(@Header("Authorization") token: String): Response<List<RentalStatus>>
 
     companion object {
         private const val BASE_URL = "http://192.168.1.14:3000/"
@@ -45,11 +45,11 @@ class StatusViewModel : ViewModel() {
     private val _statusData = MutableStateFlow<List<RentalStatus>>(emptyList())
     val statusData: StateFlow<List<RentalStatus>> get() = _statusData
 
-    // Fungsi untuk memuat data dari API
-    fun loadStatus() {
+    // Fungsi untuk memuat data dari API dengan token
+    fun loadStatus(token: String) {
         viewModelScope.launch {
             try {
-                val response: Response<List<RentalStatus>> = apiService.getStatus()
+                val response: Response<List<RentalStatus>> = apiService.getStatus(token)
                 if (response.isSuccessful) {
                     Log.d("StatusViewModel", "API Response: ${response.body()}")
                     _statusData.value = response.body() ?: emptyList()

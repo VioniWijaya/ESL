@@ -21,10 +21,13 @@ import com.example.esl.ui.screen.UlasanPage
 import androidx.navigation.NavHostController
 import com.example.esl.models.network.ApiService
 import com.example.esl.ui.Home
-//import com.example.esl.ui.screen.CancellationScreen
+
+//import com.example.esl.viewmodel.PenyewaanViewModel
 import com.example.esl.viewmodel.PropertyViewModel
 import com.example.esl.viewmodel.UlasanViewModel
+import com.example.esl.ui.screen.ProfileScreen
 import com.example.esl.ui.screen.Register
+
 import com.example.esl.ui.screen.RiwayatScreen
 import com.example.esl.ui.screen.StatusScreen
 
@@ -43,7 +46,7 @@ sealed class Screen(val route: String) {
     }
     object DaftarPenyewaan : Screen("daftar_penyewaan")
     object Ulasan : Screen("ulasan/{orderId}") {
-        fun createRoute(orderId: Int): String = "ulasan/$orderId"
+        fun createRoute(penyewaanId: Int) = "ulasan/$penyewaanId"
     }
     object Cancellation : Screen("cancellation/{rentalId}") {
         fun createRoute(rentalId: String) = "cancellation/$rentalId"
@@ -54,8 +57,10 @@ sealed class Screen(val route: String) {
 }
 
 @Composable
-fun AppNavigation(navController: NavHostController )
-{
+
+fun AppNavigation(navController: NavHostController) {
+
+
     val propertyViewModel = viewModel<PropertyViewModel>()
 
     NavHost(navController = navController, startDestination = Screen.Login.route) {
@@ -75,14 +80,14 @@ fun AppNavigation(navController: NavHostController )
         composable(Screen.Register.route) {
             Register(
                 navController = navController,
-                onLoginClick = { navController.navigate(Screen.Login.route) },
                 onRegisterSuccess = {
-                    println("Navigating to Searching Screen")
-                    // Setelah register berhasil, navigasi ke halaman property list
+                    println("Navigating back to Login Screen")
                     navController.navigate(Screen.Login.route) {
-                        // Hapus semua screen sebelumnya dari back stack
-//                        popUpTo(Screen.Login.route) { inclusive = true }
+                        popUpTo(Screen.Register.route) { inclusive = true }
                     }
+                },
+                onLoginClick = {
+                    navController.popBackStack(Screen.Login.route, inclusive = false)
                 }
             )
         }
@@ -95,18 +100,17 @@ fun AppNavigation(navController: NavHostController )
         }
 
         composable(Screen.Status.route) {
-            StatusScreen(navController)
+            StatusScreen(navController, context = context)
         }
 
         composable(Screen.Searching.route) {
-            PropertyListScreen(
-                modifier = Modifier,
-                viewModel = propertyViewModel,
-                navController = navController,
-                onPropertyClick = { propertyId ->
-                    navController.navigate(Screen.DetailProperty.createRoute(propertyId))
-                }
-            )
+//            PropertyListScreen(
+//                modifier = Modifier,
+//                viewModel = propertyViewModel,
+//                onPropertyClick = { propertyId ->
+//                    navController.navigate(Screen.DetailProperty.createRoute(propertyId))
+//                }
+//            )
         }
 
 
@@ -118,21 +122,7 @@ fun AppNavigation(navController: NavHostController )
         composable(Screen.Profile.route) {
             ProfileScreen(navController)
         }
-        composable(Screen.Searching.route) {
-            PropertyListScreen(
-                modifier = Modifier, // Sesuai dengan parameter pertama
-                viewModel = propertyViewModel, // ViewModel yang sudah didefinisikan sebelumnya
-                navController = navController, // NavController untuk navigasi
-                onPropertyClick = { propertyId ->
-                    navController.navigate(Screen.DetailProperty.createRoute(propertyId))
-                }
-            )
 
-        }
-
-        composable(Screen.History.route) {
-            RiwayatScreen(navController)
-        }
 
 
         // Halaman Detail Property
@@ -172,16 +162,36 @@ fun AppNavigation(navController: NavHostController )
         }
 
 
-
+//        composable(Screen.DaftarPenyewaan.route) {
+//            val viewModel: PenyewaanViewModel = viewModel()
+//
+//            // Ambil userId, misalnya dari sesi atau data lokal
+//            val userId = 1 // Ganti dengan userId yang sesuai
+//
+//            // Panggil fungsi fetch data di ViewModel
+//            LaunchedEffect(Unit) {
+//                viewModel.fetchPenyewaanByUser(userId)
+//            }
+//
+//            DaftarPenyewaanPage(
+//                modifier = Modifier,
+//                penyewaanList = viewModel.penyewaanList.value,
+//                onUlasanClick = { orderId ->
+//                    navController.navigate(Screen.Ulasan.createRoute(orderId))
+//                },
+//                onCancelClick = { orderId ->
+//                    // Handle cancel logic
+//                }
+//            )
+//        }
         // Halaman Ulasan
-
-// Update the navigation route in AppNavigation
         composable(
             route = Screen.Ulasan.route,
             arguments = listOf(navArgument("orderId") { type = NavType.IntType })
         ) { backStackEntry ->
             val orderId = backStackEntry.arguments?.getInt("orderId") ?: 0
             val ulasanViewModel: UlasanViewModel = viewModel()
+
 
             UlasanPage(
                 viewModel = ulasanViewModel,

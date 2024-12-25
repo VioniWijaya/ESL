@@ -24,10 +24,10 @@ import com.example.esl.ui.component.BottomNavBar
 import com.example.esl.ui.component.Screen
 import com.example.esl.ui.component.TopButtonBar
 
-
-// Screen Riwayat Penyewaan
 @Composable
-fun RiwayatScreen(navController: NavController, viewModel: RentalViewModel = viewModel()) {
+fun RiwayatScreen(navController: NavController, context: Context) {
+    val viewModel: RentalViewModel = viewModel()
+
     val rentalData by viewModel.rentalData.collectAsState()
 
     LaunchedEffect(Unit) {
