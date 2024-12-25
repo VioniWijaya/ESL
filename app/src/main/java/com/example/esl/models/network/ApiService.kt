@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.esl.models.local.entities.Penyewaan
 import com.example.esl.models.local.entities.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -118,6 +119,21 @@ data class PenyewaanRequest(
     val tanggalAkhir: String
 )
 
+//data class CancelPenyewaanRequest(
+//    val id_penyewaan: Int,
+//    val alasanPembatalan: String
+//)
+
+data class CancellationRequest(
+    val id_penyewaan: String,
+    val alasan_batal: String
+)
+
+data class CancellationResponse(
+    val success: Boolean,
+    val message: String,
+    val data: Penyewaan
+)
 
 
 interface ApiService {
@@ -140,6 +156,9 @@ interface ApiService {
 
     @POST("api/penyewaan")
     suspend fun createPenyewaan(@Body penyewaanRequest: PenyewaanRequest): Response<PenyewaanResponse>
+
+    @POST("batal")
+    suspend fun cancelRental(@Body request: CancellationRequest): Response<CancellationResponse>
 
     @POST("api/ulasan")
     suspend fun createUlasan(@Body ulasanRequest: UlasanRequest): Response<UlasanResponse>

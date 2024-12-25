@@ -25,7 +25,7 @@ interface StatusApi {
     suspend fun getStatus(@Header("Authorization") token: String): Response<List<RentalStatus>>
 
     companion object {
-        private const val BASE_URL = "http://192.168.19.66:3000/"
+        private const val BASE_URL = "http://192.168.1.14:3000/"
 
         fun create(): StatusApi {
             val retrofit = Retrofit.Builder()
