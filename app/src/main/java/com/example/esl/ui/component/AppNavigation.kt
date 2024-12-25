@@ -1,5 +1,6 @@
 package com.example.esl.ui.component
 
+import ProfileScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -18,10 +19,11 @@ import com.example.esl.ui.screen.Register
 import com.example.esl.ui.screen.UlasanPage
 //import com.example.esl.ui.screen.RegisterScreen
 import androidx.navigation.NavHostController
+import com.example.esl.models.network.ApiService
 import com.example.esl.ui.Home
+//import com.example.esl.ui.screen.CancellationScreen
 import com.example.esl.viewmodel.PropertyViewModel
 import com.example.esl.viewmodel.UlasanViewModel
-import com.example.esl.ui.screen.ProfileScreen
 import com.example.esl.ui.screen.Register
 import com.example.esl.ui.screen.RiwayatScreen
 import com.example.esl.ui.screen.StatusScreen
@@ -43,14 +45,17 @@ sealed class Screen(val route: String) {
     object Ulasan : Screen("ulasan/{orderId}") {
         fun createRoute(orderId: Int): String = "ulasan/$orderId"
     }
-
+    object Cancellation : Screen("cancellation/{rentalId}") {
+        fun createRoute(rentalId: String) = "cancellation/$rentalId"
+    }
     object History : Screen("history")
     object Profile : Screen("profile")
     object Status : Screen("status")
 }
 
 @Composable
-fun AppNavigation(navController: NavHostController) {
+fun AppNavigation(navController: NavHostController )
+{
     val propertyViewModel = viewModel<PropertyViewModel>()
 
     NavHost(navController = navController, startDestination = Screen.Login.route) {
@@ -193,5 +198,22 @@ fun AppNavigation(navController: NavHostController) {
                 initialUlasan = ""
             )
         }
+//        composable(
+//            route = Screen.Cancellation.route,
+//            arguments = listOf(navArgument("rentalId") { type = NavType.StringType })
+//        ) { backStackEntry ->
+//            val rentalId = backStackEntry.arguments?.getString("rentalId") ?: return@composable
+//
+//            CancellationScreen(
+//                apiService = apiService,  // Gunakan parameter yang diteruskan
+//                rentalId = rentalId,
+//                onNavigateBack = {
+//                    navController.navigate(Screen.History.route) {
+//                        popUpTo(Screen.History.route) { inclusive = true }
+//                    }
+//                }
+//            )
+//        }
+
     }
 }
