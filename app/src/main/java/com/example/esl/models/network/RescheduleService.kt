@@ -17,7 +17,7 @@ data class RescheduleUiState(
     val isLoading: Boolean = true,
     val namaProperti: String = "",
     val jenisProperti: String = "",
-    val lokasiProperti: String = "",
+    val lokasi: String = "",
     val tanggalMulai: String = "",
     val masaSewa: Int = 0,
     val error: String? = null
@@ -25,10 +25,10 @@ data class RescheduleUiState(
 
 // --- API Response Model ---
 data class RescheduleDetailsResponse(
-    val idPenyewaan: String,
+    val id_penyewaan: String,
     val namaProperti: String,
     val jenisProperti: String,
-    val lokasiProperti: String,
+    val lokasi: String,
     val tanggalMulai: String,
     val masaSewa: Int
 )
@@ -41,12 +41,12 @@ data class UpdateRescheduleRequest(
 
 // --- Retrofit API Service ---
 interface RescheduleService {
-    @GET("rentals/{id}")
-    suspend fun getRescheduleDetails(@Path("id") id: String): RescheduleDetailsResponse
+    @GET("api/order/{id_penyewaan}") // Ganti 'id' dengan 'id_penyewaan'
+    suspend fun getRescheduleDetails(@Path("id_penyewaan") id_penyewaan: String): RescheduleDetailsResponse
 
-    @PUT("rentals/{id}")
+    @PUT("api/order/{id_penyewaan}") // Ganti 'id' dengan 'id_penyewaan'
     suspend fun updateReschedule(
-        @Path("id") id: String,
+        @Path("id_penyewaan") id_penyewaan: String, // Ganti 'id' dengan 'id_penyewaan'
         @Body request: UpdateRescheduleRequest
     )
 
@@ -68,16 +68,16 @@ class RescheduleViewModel : ViewModel() {
 
     private val apiService = RescheduleService.create()
 
-    fun loadRescheduleDetails(idPenyewaan: String) {
+    fun loadRescheduleDetails(id_penyewaan: String) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             try {
-                val details = apiService.getRescheduleDetails(idPenyewaan)
+                val details = apiService.getRescheduleDetails(id_penyewaan)
                 _uiState.value = RescheduleUiState(
                     isLoading = false,
                     namaProperti = details.namaProperti,
                     jenisProperti = details.jenisProperti,
-                    lokasiProperti = details.lokasiProperti,
+                    lokasi = details.lokasi,
                     tanggalMulai = details.tanggalMulai,
                     masaSewa = details.masaSewa
                 )
@@ -90,11 +90,11 @@ class RescheduleViewModel : ViewModel() {
         }
     }
 
-    fun updateRescheduleDetails(idPenyewaan: String, tanggalMulai: String, masaSewa: Int) {
+    fun updateRescheduleDetails(id_penyewaan: String, tanggalMulai: String, masaSewa: Int) {
         viewModelScope.launch {
             try {
                 apiService.updateReschedule(
-                    idPenyewaan,
+                    id_penyewaan,
                     UpdateRescheduleRequest(tanggalMulai, masaSewa)
                 )
                 _uiState.value = _uiState.value.copy(

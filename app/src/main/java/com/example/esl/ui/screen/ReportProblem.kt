@@ -1,8 +1,5 @@
 package com.example.esl.ui.screen
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,28 +9,42 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.material3.TextFieldDefaults
+import com.example.esl.models.network.Report
+import com.example.esl.models.network.ReportService
 
-
-
+import java.util.*
 
 @Composable
-fun ProblemScreen() {
+fun ProblemScreen(
+    idPenyewaan: String,
+    onReportSubmitted: () -> Unit // Callback setelah laporan berhasil disimpan
+) {
+    var description by remember { mutableStateOf("") }
+    var mediaFileName by remember { mutableStateOf("Upload File") }
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = Color(0xFF71D6CC) // Background color
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Header()
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Display idPenyewaan
+            Text(
+                text = "ID Penyewaan: $idPenyewaan",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -46,10 +57,13 @@ fun ProblemScreen() {
                         .fillMaxWidth()
                         .height(50.dp)
                         .background(Color(0xFFD9D9D9), RoundedCornerShape(8.dp))
-                        .clickable { /* Handle file upload */ },
+                        .clickable {
+                            // Simulasikan upload file
+                            mediaFileName = "bukti_laporan.png"
+                        },
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = "Upload File", color = Color.Gray)
+                    Text(text = mediaFileName, color = Color.Gray)
                 }
             }
 
@@ -59,24 +73,14 @@ fun ProblemScreen() {
             Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
                 Text(text = "Deskripsi", fontSize = 16.sp, color = Color.Black)
 
-                Box(
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    placeholder = { Text("Jelaskan masalah", color = Color.Gray) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(150.dp)
-                        .background(Color(0xFFAED9D8), RoundedCornerShape(8.dp))
-                ) {
-                    var description by remember { mutableStateOf("") }
-
-                    OutlinedTextField(
-                        value = description,
-                        onValueChange = { description = it },
-                        placeholder = { Text("Jelaskan masalah", color = Color.Gray) },
-
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(150.dp)
-                    )
-                }
+                )
             }
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -87,7 +91,19 @@ fun ProblemScreen() {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Button(
-                    onClick = { /* Handle Laporkan */ },
+                    onClick = {
+                        // Buat laporan dan simpan menggunakan ReportService
+                        val report = Report(
+                            idLaporan = UUID.randomUUID().toString(),
+                            idUsers = "current_user_id", // Ganti dengan ID pengguna yang sedang login
+                            idPenyewaan = idPenyewaan,
+                            media = mediaFileName,
+                            masalah = description,
+                            tanggalLaporan = ReportService.getCurrentDate()
+                        )
+                        ReportService.saveReport(report)
+                        onReportSubmitted()
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFCFFFB1)),
                     shape = RoundedCornerShape(16.dp),
                     modifier = Modifier.width(120.dp)
@@ -126,8 +142,8 @@ fun Header() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ProblemScreenPreview() {
-    ProblemScreen()
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun ProblemScreenPreview() {
+//    ProblemScreen(idPenyewaan = "12345") {}
+//}
