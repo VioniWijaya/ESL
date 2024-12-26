@@ -10,7 +10,6 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
-import retrofit2.http.Header
 
 data class RentalHistory(
     val id_penyewaan: Int,
@@ -22,7 +21,7 @@ data class RentalHistory(
 
 interface RentalApi {
     @GET("api/rental")
-    suspend fun getRentals(@Header("Authorization") token: String): Response<List<RentalHistory>>
+    suspend fun getRentals(): Response<List<RentalHistory>>
 
     companion object {
         private const val BASE_URL = "http://192.168.233.66:3000/"
@@ -37,6 +36,7 @@ interface RentalApi {
     }
 }
 
+// ViewModel untuk RentalHistory
 class RentalViewModel : ViewModel() {
 
     private val apiService = RentalApi.create()
@@ -44,13 +44,12 @@ class RentalViewModel : ViewModel() {
     private val _rentalData = MutableStateFlow<List<RentalHistory>>(emptyList())
     val rentalData: StateFlow<List<RentalHistory>> get() = _rentalData
 
-    // Fungsi untuk memuat data dari API dengan token
-    fun loadRentals(token: String) {
+    // Fungsi untuk memuat data dari API
+    fun loadRentals() {
         viewModelScope.launch {
             try {
-
-                val response: Response<List<RentalHistory>> = apiService.getRentals(token)
-
+                Log.d("RentalViewModel", "Starting API call...")
+                val response: Response<List<RentalHistory>> = apiService.getRentals()
                 if (response.isSuccessful) {
                     Log.d("RentalViewModel", "API Response: ${response.body()}")
                     _rentalData.value = response.body() ?: emptyList()

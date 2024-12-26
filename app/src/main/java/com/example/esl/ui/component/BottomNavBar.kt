@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.esl.ui.theme.BarColor
 
 
 @Composable
@@ -28,7 +29,7 @@ fun BottomNavBar(navController: NavController, modifier: Modifier = Modifier) { 
     BottomAppBar(
         modifier = Modifier
             .clip(RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp)),
-        containerColor = Color.Cyan,
+        containerColor = BarColor,
         contentColor = Color.White
     ) {
         Row(

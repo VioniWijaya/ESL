@@ -69,6 +69,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import com.example.esl.R
 import com.example.esl.models.local.entities.Property
 import com.example.esl.ui.theme.BackgroundColor
@@ -92,71 +95,62 @@ data class Review(
     val date: String
 )
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailProperty(modifier: Modifier = Modifier, viewModel: PropertyViewModel, propertyId: Int,  onNavigateBack: () -> Unit,  onRentClick: () -> Unit) {
+fun DetailProperty(
+    modifier: Modifier = Modifier,
+    viewModel: PropertyViewModel,
+    propertyId: Int,
+    onNavigateBack: () -> Unit,
+    onRentClick: () -> Unit
+) {
     var isFavorite by remember { mutableStateOf(false) }
     val property by viewModel.propertyDetail.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
-    // Sample reviews
 
     LaunchedEffect(propertyId) {
         Log.d("DetailProperty", "Loading property with id: $propertyId")
         viewModel.getPropertyDetail(propertyId)
     }
 
-
     Scaffold(
         topBar = {
             TopAppBar(
-
-                title = { Text("Detail Property") },
+                title = { Text("Detail Properti") },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) { // Update onClick handler
-                        Icon(Icons.Default.ArrowBack, "Back")
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* Handle share */ }) {
-                        Icon(Icons.Default.Share, "Share")
-                    }
                     IconButton(onClick = { isFavorite = !isFavorite }) {
                         Icon(
-                            if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                            "Favorite",
+                            imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                            contentDescription = "Favorite",
                             tint = if (isFavorite) Color.Red else LocalContentColor.current
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = BarColor, // Warna biru
-                    titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White,
-                    actionIconContentColor = Color.White
+                    titleContentColor = Color.White
                 )
             )
         },
         bottomBar = {
             BottomAppBar {
-                Row(
+                OutlinedButton(
+                    onClick = onRentClick,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF4CAF50), // Warna hijau untuk tombol
+                        contentColor = Color.White
+                    )
                 ) {
-//
-                    OutlinedButton(
-                        onClick = onRentClick,
-                        modifier = Modifier
-                            .weight(1f).padding(start = 8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = ButtonColors,
-                            contentColor = Color.Black // Warna text
-                        )
-                    ) {
-                        Text("Sewa Sekarang")
-                    }
+                    Text("Sewa Sekarang")
                 }
             }
         }
@@ -168,9 +162,7 @@ fun DetailProperty(modifier: Modifier = Modifier, viewModel: PropertyViewModel, 
         ) {
             when {
                 isLoading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
                 errorMessage != null -> {
                     Column(
@@ -181,7 +173,7 @@ fun DetailProperty(modifier: Modifier = Modifier, viewModel: PropertyViewModel, 
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = errorMessage ?: "Unknown error",
+                            text = errorMessage ?: "Terjadi kesalahan",
                             color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.bodyLarge
                         )
@@ -189,7 +181,7 @@ fun DetailProperty(modifier: Modifier = Modifier, viewModel: PropertyViewModel, 
                             onClick = { viewModel.getPropertyDetail(propertyId) },
                             modifier = Modifier.padding(top = 8.dp)
                         ) {
-                            Text("Retry")
+                            Text("Coba Lagi")
                         }
                     }
                 }
@@ -210,6 +202,7 @@ fun DetailProperty(modifier: Modifier = Modifier, viewModel: PropertyViewModel, 
 
 @Composable
 fun DetailContent(property: Property) {
+
     val reviews = remember {
         listOf(
             Review(
@@ -227,285 +220,119 @@ fun DetailContent(property: Property) {
             Review("Mike Johnson", 4f, "Pengalaman menyewa yang menyenangkan", "18 Nov 2024")
         )
     }
-    // List gambar kendaraan
-    val vehicleImages = remember {
-        listOf(
-            VehicleImage(R.drawable.toyota_avanza, "Tampak Depan"),
-            VehicleImage(R.drawable.toyota_avanza1, "Tampak Belakang"),
+
+    Column(
+        modifier = Modifier
+            .verticalScroll(rememberScrollState())
+            .background(Color(0xFFF5F5F5))
+    ) {
+        // Gambar Properti
+        Image(
+            painter = rememberAsyncImagePainter(property.foto_properti),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp),
+            contentScale = ContentScale.Crop
         )
-    }
-            Column(
-                modifier = Modifier
-//                    .padding(paddingValues)
-                    .verticalScroll(rememberScrollState())
-                    .background(BackgroundColor)
+
+        // Informasi Properti
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(property.nama_properti, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                "Harga: Rp ${property.hargaSewa} / hari",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color(0xFF388E3C)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Divider()
+            Spacer(modifier = Modifier.height(16.dp))
+            // Deskripsi Pemilik
+            Text("Nama Pemilik", fontSize = 18.sp, fontWeight = FontWeight.Medium)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(property.pemilik)
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Divider()
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Deskripsi Properti
+            Text("Deskripsi", fontSize = 18.sp, fontWeight = FontWeight.Medium)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(property.deskripsi)
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Divider()
+
+            // Reviews Section
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Image Carousel
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(250.dp)
-                ) {
-                    val pagerState = rememberPagerState(pageCount = { vehicleImages.size })
-                    val coroutineScope = rememberCoroutineScope()
-
-                    HorizontalPager(
-                        state = pagerState,
-                        modifier = Modifier.fillMaxSize()
-                    ) { page ->
-                        Image(
-                            painter = painterResource(id = vehicleImages[page].resourceId),
-                            contentDescription = vehicleImages[page].description,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-                    // Image counter
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(16.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.7f))
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                    ) {
-                        Text(
-                            "${pagerState.currentPage + 1}/${vehicleImages.size}",
-                            color = Color.White
-                        )
-                    }
-                    // Dots Indicator
-                    Row(
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = 16.dp),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        repeat(vehicleImages.size) { iteration ->
-                            val color = if (pagerState.currentPage == iteration)
-                                Color.White else Color.White.copy(alpha = 0.5f)
-                            Box(
-                                modifier = Modifier
-                                    .padding(2.dp)
-                                    .clip(CircleShape)
-                                    .background(color)
-                                    .size(8.dp)
-                                    .clickable {
-                                        coroutineScope.launch {
-                                            pagerState.animateScrollToPage(iteration)
-                                        }
-                                    }
-                            )
-                        }
-                    }
+                Text(
+                    "Ulasan (${reviews.size})",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium
+                )
+                TextButton(onClick = { /* Handle see all reviews */ }) {
+                    Text("Lihat Semua")
                 }
+            }
 
-                // Thumbnail Preview
-                LazyRow(
+            // Review Cards
+            reviews.take(3).forEach { review ->
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp)
-                ) {
-                    items(vehicleImages) { image ->
-                        Image(
-                            painter = painterResource(id = image.resourceId),
-                            contentDescription = image.description,
-                            modifier = Modifier
-                                .size(60.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .clickable {
-                                    // Handle thumbnail click
-                                },
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-                }
-
-                // Product Info Section
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    // Vehicle Name and Price
-                    Text(
-                        property.nama_properti,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
                     )
-                    Spacer(Modifier.height(8.dp))
-                    Text(
-                        NumberFormat.getCurrencyInstance(java.util.Locale("id", "ID"))
-                            .format(property.hargaSewa) + " / hari",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    // Vehicle Specs
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 16.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)
-                        )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
                     ) {
                         Row(
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Icon(Icons.Default.Build, "Transmission")
-                                Text("Matic", fontSize = 14.sp)
-                            }
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Icon(Icons.Default.Person, "Seats")
-                                Text("7 Kursi", fontSize = 14.sp)
-                            }
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Icon(Icons.Default.Create, "Fuel")
-                                Text("Bensin", fontSize = 14.sp)
-                            }
-                        }
-                    }
-
-                    Divider()
-
-                    // Shop Info
-                    Row(
-                        modifier = Modifier
-                            .padding(vertical = 16.dp)
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-//                    AsyncImage(
-//                        model = "https://example.com/shop-image.jpg",
-//                        contentDescription = "Shop Image",
-//                        modifier = Modifier
-//                            .size(48.dp)
-//                            .clip(RoundedCornerShape(24.dp))
-//                    )
-                        Column(
-                            modifier = Modifier
-                                .padding(start = 16.dp)
-                                .weight(1f)
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                property.pemilik,
-                                fontWeight = FontWeight.Medium
+                                review.userName,
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.weight(1f)
                             )
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
+                            Text(
+                                review.date,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                fontSize = 12.sp
+                            )
+                        }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(vertical = 4.dp)
+                        ) {
+                            repeat(5) { index ->
                                 Icon(
                                     Icons.Default.Star,
-                                    "Rating",
-                                    tint = Color(0xFFFFC107),
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Text(
-                                    "4.8 • Member sejak 2022",
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                    "Star",
+                                    modifier = Modifier.size(16.dp),
+                                    tint = if (index < review.rating) Color(0xFFFFC107)
+                                    else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
                                 )
                             }
                         }
-                    }
-
-                    Divider()
-
-                    // Vehicle Description
-                    Text(
-                        "Tentang Kendaraan",
-                        modifier = Modifier.padding(vertical = 16.dp),
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Text(
-                        property.deskripsi
-                            .trimIndent()
-                    )
-
-                    Divider(modifier = Modifier.padding(vertical = 16.dp))
-
-                    // Reviews Section
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
                         Text(
-                            "Ulasan (${reviews.size})",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Medium
+                            review.comment,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
                         )
-                        TextButton(onClick = { /* Handle see all reviews */ }) {
-                            Text("Lihat Semua")
-                        }
-                    }
-
-                    // Review Cards
-                    reviews.take(3).forEach { review ->
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surface
-                            )
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(16.dp)
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        review.userName,
-                                        fontWeight = FontWeight.Medium,
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                    Text(
-                                        review.date,
-                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                                        fontSize = 12.sp
-                                    )
-                                }
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.padding(vertical = 4.dp)
-                                ) {
-                                    repeat(5) { index ->
-                                        Icon(
-                                            Icons.Default.Star,
-                                            "Star",
-                                            modifier = Modifier.size(16.dp),
-                                            tint = if (index < review.rating) Color(0xFFFFC107)
-                                            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-                                        )
-                                    }
-                                }
-                                Text(
-                                    review.comment,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
-                                )
-                            }
-                        }
                     }
                 }
             }
         }
+    }
+}
 
-//@Preview(showBackground = true)
-//@Composable
-//fun DetailPropertyPreview() {
-//    // Berikan instance ViewModel dummy jika dibutuhkan
-//    val dummyViewModel = PropertyViewModel() // Pastikan untuk membuat ViewModel dengan dummy data
-//    ESLTheme { // Gunakan tema yang sesuai dengan proyek Anda
-//        DetailProperty(
-//            viewModel = dummyViewModel,
-//            propertyId = 1 // Gunakan ID properti dummy
-//        )
-//    }
-//}
+
+
