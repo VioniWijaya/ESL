@@ -32,14 +32,13 @@ fun Home(navController: NavController) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFB2EBF2))
+                .background(Color(0xFF2ED4D8))
                 .padding(innerPadding)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .background(Color(0xFF40E0D0))
                     .padding(16.dp)
             ) {
 

@@ -135,7 +135,7 @@ fun StatusCard(status: RentalStatus, navController: NavController) {
                 }
 
                 Button(
-                    onClick = { /* TODO: Add Report Functionality */ },
+                    onClick = { navController.navigate(Screen.Report.createRoute(id_penyewaan = status.id_penyewaan)) },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
                 ) {
                     Text(text = "Lapor", color = Color.White)
