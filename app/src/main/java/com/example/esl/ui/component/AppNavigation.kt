@@ -58,8 +58,8 @@ sealed class Screen(val route: String) {
     object History : Screen("history")
     object Profile : Screen("profile")
     object Status : Screen("status")
-    object Order : Screen("reschedule/{idPenyewaan}") {
-        fun createRoute(idPenyewaan: String) = "reschedule/$idPenyewaan"
+    object Order : Screen("order/{id_penyewaan}") {
+        fun createRoute(id_penyewaan: String) = "order/$id_penyewaan"
     }
 
 }
@@ -142,17 +142,17 @@ fun AppNavigation(navController: NavHostController) {
         // Halaman Reschedule
         composable(
             route = Screen.Order.route,
-            arguments = listOf(navArgument("idPenyewaan") { type = NavType.StringType })
+            arguments = listOf(navArgument("id_penyewaan") { type = NavType.StringType })
         ) { backStackEntry ->
-            val idPenyewaan = backStackEntry.arguments?.getString("idPenyewaan") ?: ""
+            val id_penyewaan = backStackEntry.arguments?.getString("id_penyewaan") ?: ""
             val rescheduleViewModel: RescheduleViewModel = viewModel()
 
             LaunchedEffect(Unit) {
-                rescheduleViewModel.loadRescheduleDetails(idPenyewaan)
+                rescheduleViewModel.loadRescheduleDetails(id_penyewaan)
             }
 
             RescheduleScreen(
-                idPenyewaan = idPenyewaan,
+                id_penyewaan = id_penyewaan,
                 viewModel = rescheduleViewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onRescheduleSuccess = {

@@ -104,11 +104,12 @@ fun StatusCard(status: RentalStatus, navController: NavController) {
                 fontSize = 14.sp,
                 color = Color.Gray
             )
-            Text(
-                text = "idPenyewaan: ${status.idPenyewaan}",
-                fontSize = 14.sp,
-                color = Color.Gray
-            )
+
+                Text(
+                    text = "idPenyewaan: ${status.id_penyewaan}",
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -124,7 +125,8 @@ fun StatusCard(status: RentalStatus, navController: NavController) {
                 }
 
                 Button(
-                    onClick = { navController.navigate(Screen.Order.route + "/${status.idPenyewaan}")
+                    onClick = { navController.navigate(Screen.Order.createRoute("id_penyewaan=${status.id_penyewaan}"))
+
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)
                 ) {

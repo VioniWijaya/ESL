@@ -14,7 +14,7 @@ import retrofit2.http.Header
 
 // Data model untuk status rental
 data class RentalStatus(
-    val idPenyewaan: String,
+    val id_penyewaan: String,
     val status: String,
     val nama_properti: String,
     val tanggalMulai: String,
