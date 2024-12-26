@@ -48,7 +48,7 @@ fun ProfileScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFB2EBF2))
+                .background(Color(0xFF2ED4D8))
                 .padding(innerPadding)
         ) {
             ProfileContent(

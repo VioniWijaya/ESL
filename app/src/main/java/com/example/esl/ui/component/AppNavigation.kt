@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -21,19 +22,17 @@ import com.example.esl.ui.screen.Register
 import com.example.esl.ui.screen.UlasanPage
 //import com.example.esl.ui.screen.RegisterScreen
 import androidx.navigation.NavHostController
-
 import com.example.esl.models.network.RescheduleViewModel
 import com.example.esl.models.network.StatusViewModel
 import com.example.esl.ui.Home
+import com.example.esl.ui.screen.ProblemScreen
 import com.example.esl.ui.screen.RescheduleScreen
 //import com.example.esl.viewmodel.PenyewaanViewModel
 import com.example.esl.viewmodel.PropertyViewModel
 import com.example.esl.viewmodel.UlasanViewModel
 
-
 import com.example.esl.ui.screen.RiwayatScreen
 import com.example.esl.ui.screen.StatusScreen
-import com.example.ui.screen.ProfileScreen
 
 
 sealed class Screen(val route: String) {
@@ -52,25 +51,24 @@ sealed class Screen(val route: String) {
     object Ulasan : Screen("ulasan/{orderId}") {
         fun createRoute(penyewaanId: Int) = "ulasan/$penyewaanId"
     }
-    object Cancellation : Screen("cancellation/{rentalId}") {
-        fun createRoute(rentalId: String) = "cancellation/$rentalId"
-    }
+
     object History : Screen("history")
     object Profile : Screen("profile")
     object Status : Screen("status")
     object Reschedule : Screen("reschedule/{id_penyewaan}") {
         fun createRoute(id_penyewaan: Int) = "reschedule/$id_penyewaan"
-
+    }
+    object Report : Screen("report/{id_penyewaan}") {
+        fun createRoute(id_penyewaan: Int) = "report/$id_penyewaan"
     }
 
 }
 
 @Composable
-
 fun AppNavigation(navController: NavHostController) {
 
-
     val propertyViewModel = viewModel<PropertyViewModel>()
+    val context = LocalContext.current
 
     NavHost(navController = navController, startDestination = Screen.Login.route) {
         // Halaman Login
@@ -81,7 +79,8 @@ fun AppNavigation(navController: NavHostController) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
                 },
-                onRegisterClick = { navController.navigate(Screen.Register.route) }
+                onRegisterClick = { navController.navigate(Screen.Register.route) },
+
             )
         }
 
@@ -132,12 +131,31 @@ fun AppNavigation(navController: NavHostController) {
 
 
         composable(Screen.History.route) {
-            RiwayatScreen(navController)
+            RiwayatScreen(navController, context = context)
 
         }
 
         composable(Screen.Profile.route) {
-            ProfileScreen(navController, context = context)
+            ProfileScreen(navController)
+        }
+
+        // Halaman Report Problem
+        composable(
+            route = Screen.Report.route,
+            arguments = listOf(navArgument("id_penyewaan") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val id_penyewaan = backStackEntry.arguments?.getInt("id_penyewaan") ?: 0
+            val userId =  // Ganti dengan ID user yang sesuai
+
+            ProblemScreen(
+                id_penyewaan = id_penyewaan,
+                onNavigateBack = { navController.popBackStack() },
+                onReportSubmitted = {
+                    navController.navigate(Screen.Status.route) {
+                        popUpTo(Screen.Report.route) { inclusive = true }
+                    }
+                }
+            )
         }
 
         // Halaman Reschedule
@@ -240,38 +258,18 @@ fun AppNavigation(navController: NavHostController) {
             val orderId = backStackEntry.arguments?.getInt("orderId") ?: 0
             val ulasanViewModel: UlasanViewModel = viewModel()
 
-
-            UlasanPage(
-                viewModel = ulasanViewModel,
-                penyewaanId = orderId,
-                onNavigateBack = {
-                    navController.popBackStack()
-                },
-                onSubmit = { ulasanRequest ->
-                    ulasanViewModel.createUlasan(ulasanRequest) {
-                        navController.popBackStack() // Kembali ke halaman sebelumnya
-                    }
-                },
-                initialRating = 0,
-                initialUlasan = ""
-            )
-        }
-//        composable(
-//            route = Screen.Cancellation.route,
-//            arguments = listOf(navArgument("rentalId") { type = NavType.StringType })
-//        ) { backStackEntry ->
-//            val rentalId = backStackEntry.arguments?.getString("rentalId") ?: return@composable
-//
-//            CancellationScreen(
-//                apiService = apiService,  // Gunakan parameter yang diteruskan
-//                rentalId = rentalId,
-//                onNavigateBack = {
-//                    navController.navigate(Screen.History.route) {
-//                        popUpTo(Screen.History.route) { inclusive = true }
-//                    }
-//                }
+//            UlasanPage(
+//                onSubmit = { ulasanRequest ->
+//                    // Update ulasanRequest untuk memasukkan orderId
+//                    val updatedRequest = ulasanRequest.copy(
+//                        id_penyewaan = orderId
+//                    )
+//                    ulasanViewModel.createUlasan(updatedRequest)
+//                    navController.popBackStack()
+//                },
+//                initialRating = 0,
+//                initialUlasan = ""
 //            )
-//        }
-
+        }
     }
 }

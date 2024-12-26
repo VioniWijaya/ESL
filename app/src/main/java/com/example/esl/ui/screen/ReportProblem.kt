@@ -19,9 +19,9 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ProblemScreen(
-    idPenyewaan: Int,
-    userId: Int,
-    onReportSubmitted: () -> Unit
+    id_penyewaan: Int,
+    onReportSubmitted: () -> Unit,
+    onNavigateBack: () -> Unit
 ) {
     var description by remember { mutableStateOf("") }
     var mediaFileName by remember { mutableStateOf("Upload File") }
@@ -29,7 +29,7 @@ fun ProblemScreen(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFF40E0D0) // Warna latar belakang yang sama seperti di RescheduleScreen
+        color = Color(0xFF40E0D0)
     ) {
         Column(
             modifier = Modifier
@@ -63,7 +63,7 @@ fun ProblemScreen(
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        text = "ID Penyewaan: $idPenyewaan",
+                        text = "ID Penyewaan: $id_penyewaan",
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp
                     )
@@ -101,8 +101,7 @@ fun ProblemScreen(
                             try {
                                 val report = Report(
                                     idLaporan = 0, // Dibuat otomatis oleh database
-                                    idUsers = userId,
-                                    idPenyewaan = idPenyewaan,
+                                    id_penyewaan = id_penyewaan,
                                     media = mediaFileName,
                                     masalah = description,
                                     tanggalLaporan = ReportService.getCurrentDate()
@@ -132,7 +131,7 @@ fun ProblemScreen(
 
             // Tombol Kembali
             Button(
-                onClick = { /* Handle Kembali */ },
+                onClick = onNavigateBack,
                 colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
                 modifier = Modifier
                     .fillMaxWidth()
