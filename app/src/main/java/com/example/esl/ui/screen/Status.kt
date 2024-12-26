@@ -125,9 +125,10 @@ fun StatusCard(status: RentalStatus, navController: NavController) {
                 }
 
                 Button(
-                    onClick = { navController.navigate(Screen.Order.createRoute("id_penyewaan=${status.id_penyewaan}"))
-
-                    },
+                    onClick = {
+                        navController.navigate(Screen.Reschedule.createRoute(id_penyewaan = status.id_penyewaan))
+                    }
+                    ,
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)
                 ) {
                     Text(text = "Reschedule", color = Color.Black)

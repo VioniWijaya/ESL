@@ -58,8 +58,9 @@ sealed class Screen(val route: String) {
     object History : Screen("history")
     object Profile : Screen("profile")
     object Status : Screen("status")
-    object Order : Screen("order/{id_penyewaan}") {
-        fun createRoute(id_penyewaan: String) = "order/$id_penyewaan"
+    object Reschedule : Screen("reschedule/{id_penyewaan}") {
+        fun createRoute(id_penyewaan: Int) = "reschedule/$id_penyewaan"
+
     }
 
 }
@@ -141,27 +142,32 @@ fun AppNavigation(navController: NavHostController) {
 
         // Halaman Reschedule
         composable(
-            route = Screen.Order.route,
-            arguments = listOf(navArgument("id_penyewaan") { type = NavType.StringType })
+            route = Screen.Reschedule.route,
+            arguments = listOf(navArgument("id_penyewaan") { type = NavType.IntType })
         ) { backStackEntry ->
-            val id_penyewaan = backStackEntry.arguments?.getString("id_penyewaan") ?: ""
+            val id_penyewaan = backStackEntry.arguments?.getInt("id_penyewaan")
             val rescheduleViewModel: RescheduleViewModel = viewModel()
 
-            LaunchedEffect(Unit) {
-                rescheduleViewModel.loadRescheduleDetails(id_penyewaan)
+            LaunchedEffect(id_penyewaan) {
+                id_penyewaan?.let {
+                    rescheduleViewModel.loadRescheduleDetails(it)
+                }
             }
 
             RescheduleScreen(
-                id_penyewaan = id_penyewaan,
+                id_penyewaan = id_penyewaan ?: 0,
                 viewModel = rescheduleViewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onRescheduleSuccess = {
                     navController.navigate(Screen.Status.route) {
-                        popUpTo(Screen.Order.route) { inclusive = true }
+                        popUpTo(Screen.Reschedule.route) { inclusive = true }
                     }
                 }
             )
         }
+
+
+
 
 
 

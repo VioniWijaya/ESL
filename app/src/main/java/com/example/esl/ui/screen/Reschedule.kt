@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun RescheduleScreen(
-    id_penyewaan: String,
+    id_penyewaan: Int,
     onNavigateBack: () -> Unit,
     onRescheduleSuccess: () -> Unit,
     viewModel: RescheduleViewModel = viewModel()

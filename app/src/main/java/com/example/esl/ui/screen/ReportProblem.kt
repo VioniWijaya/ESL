@@ -10,140 +10,142 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.esl.models.network.Report
 import com.example.esl.models.network.ReportService
-
-import java.util.*
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProblemScreen(
-    idPenyewaan: String,
-    onReportSubmitted: () -> Unit // Callback setelah laporan berhasil disimpan
+    idPenyewaan: Int,
+    userId: Int,
+    onReportSubmitted: () -> Unit
 ) {
     var description by remember { mutableStateOf("") }
     var mediaFileName by remember { mutableStateOf("Upload File") }
+    val coroutineScope = rememberCoroutineScope()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFF71D6CC) // Background color
+        color = Color(0xFF40E0D0) // Warna latar belakang yang sama seperti di RescheduleScreen
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF40E0D0)), // Warna latar belakang
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Header()
+            Spacer(modifier = Modifier.height(32.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Display idPenyewaan
+            // Header
             Text(
-                text = "ID Penyewaan: $idPenyewaan",
-                fontSize = 16.sp,
+                text = "Laporan Masalah",
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                textAlign = TextAlign.Center,
+                color = Color.White
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Upload File Section
-            Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
-                Text(text = "Upload Bukti", fontSize = 16.sp, color = Color.Black)
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .background(Color(0xFFD9D9D9), RoundedCornerShape(8.dp))
-                        .clickable {
-                            // Simulasikan upload file
-                            mediaFileName = "bukti_laporan.png"
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = mediaFileName, color = Color.Gray)
+            // Display ID Penyewaan
+            Card(
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.8f))
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "ID Penyewaan: $idPenyewaan",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Description Section
-            Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
-                Text(text = "Deskripsi", fontSize = 16.sp, color = Color.Black)
+            // Input File
+            var inputFileName by remember { mutableStateOf(mediaFileName) }
+            InputField(
+                title = "Upload Bukti",
+                value = inputFileName,
+                onValueChange = { inputFileName = it },
+                placeholder = "Klik untuk memilih file"
+            )
 
-                OutlinedTextField(
-                    value = description,
-                    onValueChange = { description = it },
-                    placeholder = { Text("Jelaskan masalah", color = Color.Gray) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Input Deskripsi
+            InputField(
+                title = "Deskripsi Masalah",
+                value = description,
+                onValueChange = { description = it },
+                placeholder = "Jelaskan masalah yang terjadi"
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            // Tombol Perbarui
+            Button(
+                onClick = {
+                    coroutineScope.launch {
+                        if (description.isNotBlank() && mediaFileName.isNotBlank()) {
+                            try {
+                                val report = Report(
+                                    idLaporan = 0, // Dibuat otomatis oleh database
+                                    idUsers = userId,
+                                    idPenyewaan = idPenyewaan,
+                                    media = mediaFileName,
+                                    masalah = description,
+                                    tanggalLaporan = ReportService.getCurrentDate()
+                                )
+                                ReportService.saveReport(report)
+                                onReportSubmitted()
+                            } catch (e: Exception) {
+                                // Menangani error saat menyimpan laporan
+                            }
+                        }
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE0FFFF)),
+                shape = RoundedCornerShape(25.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .height(50.dp)
+            ) {
+                Text(
+                    text = "Laporkan",
+                    fontSize = 16.sp,
+                    color = Color.Black,
+                    fontWeight = FontWeight.Bold
                 )
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Buttons
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+            // Tombol Kembali
+            Button(
+                onClick = { /* Handle Kembali */ },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .height(50.dp)
             ) {
-                Button(
-                    onClick = {
-                        // Buat laporan dan simpan menggunakan ReportService
-                        val report = Report(
-                            idLaporan = UUID.randomUUID().toString(),
-                            idUsers = "current_user_id", // Ganti dengan ID pengguna yang sedang login
-                            idPenyewaan = idPenyewaan,
-                            media = mediaFileName,
-                            masalah = description,
-                            tanggalLaporan = ReportService.getCurrentDate()
-                        )
-                        ReportService.saveReport(report)
-                        onReportSubmitted()
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFCFFFB1)),
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier.width(120.dp)
-                ) {
-                    Text(text = "Laporkan", color = Color.Black)
-                }
-
-                Button(
-                    onClick = { /* Handle Batal */ },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD9D9D9)),
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier.width(120.dp)
-                ) {
-                    Text(text = "Batal", color = Color.Black)
-                }
+                Text(
+                    text = "Kembali",
+                    fontSize = 16.sp,
+                    color = Color.Black,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }
 }
-
-@Composable
-fun Header() {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color(0xFF006D77)) // Ganti dengan warna biru tua
-            .padding(8.dp)
-    ) {
-        Text(
-            text = "Beri Ulasan",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White
-        )
-    }
-}
-
-//@Preview(showBackground = true)
-//@Composable
-//fun ProblemScreenPreview() {
-//    ProblemScreen(idPenyewaan = "12345") {}
-//}
