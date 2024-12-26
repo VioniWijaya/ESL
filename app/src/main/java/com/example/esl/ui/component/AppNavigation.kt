@@ -2,6 +2,7 @@ package com.example.esl.ui.component
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -10,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.esl.ui.LoginScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.esl.ui.screen.DaftarPenyewaanPage
 import com.example.esl.ui.screen.DetailProperty
 //import com.example.esl.ui.screen.Home
@@ -19,13 +21,17 @@ import com.example.esl.ui.screen.Register
 import com.example.esl.ui.screen.UlasanPage
 //import com.example.esl.ui.screen.RegisterScreen
 import androidx.navigation.NavHostController
+import com.example.esl.models.network.RescheduleViewModel
+import com.example.esl.models.network.StatusViewModel
 import com.example.esl.ui.Home
+import com.example.esl.ui.screen.RescheduleScreen
 //import com.example.esl.viewmodel.PenyewaanViewModel
 import com.example.esl.viewmodel.PropertyViewModel
 import com.example.esl.viewmodel.UlasanViewModel
-import com.example.esl.ui.screen.ProfileScreen
+
 import com.example.esl.ui.screen.RiwayatScreen
 import com.example.esl.ui.screen.StatusScreen
+import com.example.ui.screen.ProfileScreen
 
 
 sealed class Screen(val route: String) {
@@ -48,6 +54,10 @@ sealed class Screen(val route: String) {
     object History : Screen("history")
     object Profile : Screen("profile")
     object Status : Screen("status")
+    object Order : Screen("reschedule/{idPenyewaan}") {
+        fun createRoute(idPenyewaan: String) = "reschedule/$idPenyewaan"
+    }
+
 }
 
 @Composable
@@ -94,8 +104,16 @@ fun AppNavigation(navController: NavHostController) {
         }
 
         composable(Screen.Status.route) {
-            StatusScreen(navController, context = context)
+            val statusViewModel: StatusViewModel = viewModel()
+            val rentalStatusList = statusViewModel.statusData.collectAsState(initial = emptyList()).value
+
+            StatusScreen(
+                navController = navController,
+                context = context,
+                statusList = rentalStatusList // This should now work
+            )
         }
+
 
         composable(Screen.Searching.route) {
 //            PropertyListScreen(
@@ -114,8 +132,34 @@ fun AppNavigation(navController: NavHostController) {
         }
 
         composable(Screen.Profile.route) {
-            ProfileScreen(navController)
+            ProfileScreen(navController, context = context)
         }
+
+        // Halaman Reschedule
+        composable(
+            route = Screen.Order.route,
+            arguments = listOf(navArgument("idPenyewaan") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val idPenyewaan = backStackEntry.arguments?.getString("idPenyewaan") ?: ""
+            val rescheduleViewModel: RescheduleViewModel = viewModel()
+
+            LaunchedEffect(Unit) {
+                rescheduleViewModel.loadRescheduleDetails(idPenyewaan)
+            }
+
+            RescheduleScreen(
+                idPenyewaan = idPenyewaan,
+                viewModel = rescheduleViewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onRescheduleSuccess = {
+                    navController.navigate(Screen.Status.route) {
+                        popUpTo(Screen.Order.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+
 
 
 

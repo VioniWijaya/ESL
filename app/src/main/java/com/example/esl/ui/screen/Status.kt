@@ -20,10 +20,11 @@ import androidx.navigation.NavController
 import com.example.esl.models.network.RentalStatus
 import com.example.esl.models.network.StatusViewModel
 import com.example.esl.ui.component.BottomNavBar
+import com.example.esl.ui.component.Screen
 import com.example.esl.ui.component.TopButtonBar
 
 @Composable
-fun StatusScreen(navController: NavController, context: Context) {
+fun StatusScreen(navController: NavController, context: Context, statusList : List<RentalStatus>) {
     val viewModel: StatusViewModel = viewModel()
     val statusData by viewModel.statusData.collectAsState()
 
@@ -103,6 +104,11 @@ fun StatusCard(status: RentalStatus, navController: NavController) {
                 fontSize = 14.sp,
                 color = Color.Gray
             )
+            Text(
+                text = "idPenyewaan: ${status.idPenyewaan}",
+                fontSize = 14.sp,
+                color = Color.Gray
+            )
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -118,7 +124,8 @@ fun StatusCard(status: RentalStatus, navController: NavController) {
                 }
 
                 Button(
-                    onClick = { /* TODO: Add Report Functionality */},
+                    onClick = { navController.navigate(Screen.Order.route + "/${status.idPenyewaan}")
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)
                 ) {
                     Text(text = "Reschedule", color = Color.Black)
