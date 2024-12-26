@@ -5,9 +5,9 @@ import java.util.*
 
 // Data class untuk laporan
 data class Report(
-    val idLaporan: String,
-    val idUsers: String,
-    val idPenyewaan: String,
+    val idLaporan: Int,
+    val idUsers: Int,
+    val idPenyewaan: Int,
     val media: String,
     val masalah: String,
     val tanggalLaporan: String

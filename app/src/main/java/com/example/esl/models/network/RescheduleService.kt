@@ -25,7 +25,7 @@ data class RescheduleUiState(
 
 // --- API Response Model ---
 data class RescheduleDetailsResponse(
-    val id_penyewaan: String,
+    val id_penyewaan: Int, // Ubah dari String ke Int
     val namaProperti: String,
     val jenisProperti: String,
     val lokasi: String,
@@ -41,12 +41,12 @@ data class UpdateRescheduleRequest(
 
 // --- Retrofit API Service ---
 interface RescheduleService {
-    @GET("api/order/{id_penyewaan}") // Ganti 'id' dengan 'id_penyewaan'
-    suspend fun getRescheduleDetails(@Path("id_penyewaan") id_penyewaan: String): RescheduleDetailsResponse
+    @GET("api/order/{id_penyewaan}")
+    suspend fun getRescheduleDetails(@Path("id_penyewaan") id_penyewaan: Int): RescheduleDetailsResponse
 
-    @PUT("api/order/{id_penyewaan}") // Ganti 'id' dengan 'id_penyewaan'
+    @PUT("api/order/{id_penyewaan}")
     suspend fun updateReschedule(
-        @Path("id_penyewaan") id_penyewaan: String, // Ganti 'id' dengan 'id_penyewaan'
+        @Path("id_penyewaan") id_penyewaan: Int, // Ganti dari String ke Int
         @Body request: UpdateRescheduleRequest
     )
 
@@ -68,7 +68,7 @@ class RescheduleViewModel : ViewModel() {
 
     private val apiService = RescheduleService.create()
 
-    fun loadRescheduleDetails(id_penyewaan: String) {
+    fun loadRescheduleDetails(id_penyewaan: Int) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             try {
@@ -90,7 +90,7 @@ class RescheduleViewModel : ViewModel() {
         }
     }
 
-    fun updateRescheduleDetails(id_penyewaan: String, tanggalMulai: String, masaSewa: Int) {
+    fun updateRescheduleDetails(id_penyewaan: Int, tanggalMulai: String, masaSewa: Int) {
         viewModelScope.launch {
             try {
                 apiService.updateReschedule(
