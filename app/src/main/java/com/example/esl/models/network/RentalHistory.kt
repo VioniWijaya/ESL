@@ -24,7 +24,7 @@ interface RentalApi {
     suspend fun getRentals(): Response<List<RentalHistory>>
 
     companion object {
-        private const val BASE_URL = "http://192.168.1.14:3000/"
+        private const val BASE_URL = "http://192.168.233.66:3000/"
 
         fun create(): RentalApi {
             val retrofit = Retrofit.Builder()

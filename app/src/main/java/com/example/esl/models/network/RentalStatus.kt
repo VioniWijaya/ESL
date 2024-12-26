@@ -14,18 +14,22 @@ import retrofit2.http.Header
 
 // Data model untuk status rental
 data class RentalStatus(
+    val idPenyewaan: String,
     val status: String,
+    val nama_properti: String,
     val tanggalMulai: String,
-    val tanggalAkhir: String,
-    val nama_properti: String
+    val tanggalAkhir: String
 )
+
 
 interface StatusApi {
     @GET("api/status")
     suspend fun getStatus(@Header("Authorization") token: String): Response<List<RentalStatus>>
 
     companion object {
-        private const val BASE_URL = "http://192.168.1.14:3000/"
+
+        private const val BASE_URL = "http://192.168.233.66:3000/"
+
 
         fun create(): StatusApi {
             val retrofit = Retrofit.Builder()

@@ -9,23 +9,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.esl.models.network.OrderViewModel
+import com.example.esl.models.network.RescheduleViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun OrderScreen(
+fun RescheduleScreen(
     idPenyewaan: String,
-    idProperti: String,
-    viewModel: OrderViewModel = viewModel()
+    onNavigateBack: () -> Unit,
+    onRescheduleSuccess: () -> Unit,
+    viewModel: RescheduleViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) {
-        viewModel.loadOrderDetails(idPenyewaan, idProperti)
+    LaunchedEffect(idPenyewaan) {
+        viewModel.loadRescheduleDetails(idPenyewaan)
     }
 
     if (uiState.isLoading) {
@@ -51,33 +52,46 @@ fun OrderScreen(
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(text = uiState.namaProperti, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     Text(text = uiState.jenisProperti, fontSize = 14.sp, color = Color.Gray)
+                    Text(text = uiState.lokasiProperti, fontSize = 14.sp, color = Color.Gray)
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // Input Tanggal Mulai
+            var tanggalMulai by remember { mutableStateOf(uiState.tanggalMulai) }
             InputField(
-                title = "Mulai",
-                value = uiState.tanggalMulai,
-                onValueChange = { viewModel.updateTanggalMulai(it) }
+                title = "Tanggal Mulai",
+                value = tanggalMulai,
+                onValueChange = { tanggalMulai = it }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Harga Sewa
-            InputField(title = "Harga", value = "Rp. ${uiState.hargaSewa},-")
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Masa Sewa
-            InputField(title = "Sewa", value = "${uiState.masaSewa} Hari")
+            // Input Masa Sewa
+            var masaSewa by remember { mutableStateOf(uiState.masaSewa.toString()) }
+            InputField(
+                title = "Masa Sewa (Hari)",
+                value = masaSewa,
+                onValueChange = { masaSewa = it }
+            )
 
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
                 onClick = {
-                    // Update API call logic
+                    coroutineScope.launch {
+                        try {
+                            viewModel.updateRescheduleDetails(
+                                idPenyewaan = idPenyewaan,
+                                tanggalMulai = tanggalMulai,
+                                masaSewa = masaSewa.toInt()
+                            )
+                            onRescheduleSuccess() // Navigasi ke halaman Status setelah sukses
+                        } catch (e: Exception) {
+                            // Tangani error jika perlu
+                        }
+                    }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE6EE9C)),
                 shape = RoundedCornerShape(16.dp),
@@ -93,12 +107,28 @@ fun OrderScreen(
                     fontWeight = FontWeight.Bold
                 )
             }
+
+            Button(
+                onClick = onNavigateBack,
+                colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .height(48.dp)
+            ) {
+                Text(
+                    text = "Kembali",
+                    fontSize = 16.sp,
+                    color = Color.Black,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
     }
 }
 
 @Composable
-fun InputField(title: String, value: String, onValueChange: (String) -> Unit = {}) {
+fun InputField(title: String, value: String, onValueChange: (String) -> Unit) {
     Column {
         Text(
             text = title,
