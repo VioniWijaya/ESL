@@ -1,7 +1,15 @@
 package com.example.esl.ui.screen
 
+import android.Manifest
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
+import android.net.Uri
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -16,25 +24,43 @@ import androidx.compose.ui.unit.sp
 import com.example.esl.models.network.Report
 import com.example.esl.models.network.ReportService
 import kotlinx.coroutines.launch
+import coil.compose.rememberImagePainter
+import java.io.File
 
 @Composable
 fun ProblemScreen(
     id_penyewaan: Int,
     onReportSubmitted: () -> Unit,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    context: Context
 ) {
     var description by remember { mutableStateOf("") }
-    var mediaFileName by remember { mutableStateOf("Upload File") }
+    var mediaFileUri by remember { mutableStateOf<Uri?>(null) }
     val coroutineScope = rememberCoroutineScope()
+
+    val sharedPreferences: SharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+    val token = sharedPreferences.getString("jwt_token", null)
+
+    // ActivityResultLauncher for picking an image from the gallery
+    val getImageLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        mediaFileUri = uri
+    }
+
+    // ActivityResultLauncher for capturing an image with the camera
+    val takePictureLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+        if (success) {
+            // Image was successfully captured
+        }
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFF40E0D0)
+        color = Color(0xFF2ED4D8)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFF40E0D0)), // Warna latar belakang
+                .background(Color(0xFF2ED4D8)),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(32.dp))
@@ -72,14 +98,34 @@ fun ProblemScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Input File
-            var inputFileName by remember { mutableStateOf(mediaFileName) }
-            InputField(
-                title = "Upload Bukti",
-                value = inputFileName,
-                onValueChange = { inputFileName = it },
-                placeholder = "Klik untuk memilih file"
-            )
+            // Buttons for uploading/capturing images
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                Button(
+                    onClick = { getImageLauncher.launch("image/*") },
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(text = "Upload from Gallery")
+                }
+
+                Button(
+                    onClick = {
+                        val photoFile = File(context.cacheDir, "temp_photo.jpg")
+                        val photoUri = Uri.fromFile(photoFile)
+                        takePictureLauncher.launch(photoUri)
+                    },
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(text = "Capture with Camera")
+                }
+            }
+
+            mediaFileUri?.let {
+                Image(
+                    painter = rememberImagePainter(it),
+                    contentDescription = null,
+                    modifier = Modifier.size(100.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -93,24 +139,26 @@ fun ProblemScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // Tombol Perbarui
+            // Tombol Laporkan
             Button(
                 onClick = {
                     coroutineScope.launch {
-                        if (description.isNotBlank() && mediaFileName.isNotBlank()) {
+                        if (description.isNotBlank() && mediaFileUri != null) {
                             try {
                                 val report = Report(
-                                    idLaporan = 0, // Dibuat otomatis oleh database
+                                    idLaporan = 0, // Generated automatically by the server
                                     id_penyewaan = id_penyewaan,
-                                    media = mediaFileName,
-                                    masalah = description,
-                                    tanggalLaporan = ReportService.getCurrentDate()
+                                    media = mediaFileUri.toString(), // Convert URI to file path
+                                    masalah = description
                                 )
-                                ReportService.saveReport(report)
+                                ReportService.saveReportUsingRetrofit(report, token, context, mediaFileUri)
                                 onReportSubmitted()
                             } catch (e: Exception) {
-                                // Menangani error saat menyimpan laporan
+                                // Handle error
+                                println("Error: ${e.message}")
                             }
+                        } else {
+                            println("Deskripsi atau media belum diisi.")
                         }
                     }
                 },
