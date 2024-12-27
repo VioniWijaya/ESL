@@ -1,6 +1,6 @@
 package com.example.esl.ui.component
 
-import ProfileScreen
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -11,7 +11,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.esl.ui.LoginScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.esl.ui.screen.DaftarPenyewaanPage
 import com.example.esl.ui.screen.DetailProperty
@@ -22,17 +21,26 @@ import com.example.esl.ui.screen.Register
 import com.example.esl.ui.screen.UlasanPage
 //import com.example.esl.ui.screen.RegisterScreen
 import androidx.navigation.NavHostController
+import com.example.esl.models.network.RentalFavoriteViewModel
 import com.example.esl.models.network.RescheduleViewModel
 import com.example.esl.models.network.StatusViewModel
+import com.example.esl.models.network.UserService
 import com.example.esl.ui.Home
+import com.example.esl.ui.LoginScreen
+import com.example.esl.ui.ProfileScreen
+import com.example.esl.ui.RiwayatScreen
+import com.example.esl.ui.screen.FavoritScreen
 import com.example.esl.ui.screen.ProblemScreen
 import com.example.esl.ui.screen.RescheduleScreen
 //import com.example.esl.viewmodel.PenyewaanViewModel
 import com.example.esl.viewmodel.PropertyViewModel
 import com.example.esl.viewmodel.UlasanViewModel
 
-import com.example.esl.ui.screen.RiwayatScreen
 import com.example.esl.ui.screen.StatusScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 sealed class Screen(val route: String) {
@@ -61,6 +69,7 @@ sealed class Screen(val route: String) {
     object Report : Screen("report/{id_penyewaan}") {
         fun createRoute(id_penyewaan: Int) = "report/$id_penyewaan"
     }
+    object Favorite: Screen("favorite")
 
 }
 
@@ -79,6 +88,7 @@ fun AppNavigation(navController: NavHostController) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
                 },
+                context = context,
                 onRegisterClick = { navController.navigate(Screen.Register.route) },
 
             )
@@ -114,19 +124,20 @@ fun AppNavigation(navController: NavHostController) {
             StatusScreen(
                 navController = navController,
                 context = context,
-                statusList = rentalStatusList // This should now work
+                statusList = rentalStatusList
             )
         }
 
 
         composable(Screen.Searching.route) {
-//            PropertyListScreen(
-//                modifier = Modifier,
-//                viewModel = propertyViewModel,
-//                onPropertyClick = { propertyId ->
-//                    navController.navigate(Screen.DetailProperty.createRoute(propertyId))
-//                }
-//            )
+            PropertyListScreen(
+                modifier = Modifier,
+                viewModel = propertyViewModel,
+                navController = navController,
+                onPropertyClick = { propertyId ->
+                    navController.navigate(Screen.DetailProperty.createRoute(propertyId))
+                }
+            )
         }
 
 
@@ -139,17 +150,28 @@ fun AppNavigation(navController: NavHostController) {
             ProfileScreen(navController)
         }
 
+        //Halaman favorit
+        composable(Screen.Favorite.route) {
+            val favoriteViewModel: RentalFavoriteViewModel = viewModel()
+            val favoriteList = favoriteViewModel.favoriteData.collectAsState(initial = emptyList()).value
+
+            FavoritScreen(
+                navController = navController,
+                context = context
+            )
+        }
+
         // Halaman Report Problem
         composable(
             route = Screen.Report.route,
             arguments = listOf(navArgument("id_penyewaan") { type = NavType.IntType })
         ) { backStackEntry ->
             val id_penyewaan = backStackEntry.arguments?.getInt("id_penyewaan") ?: 0
-            val userId =  // Ganti dengan ID user yang sesuai
 
             ProblemScreen(
                 id_penyewaan = id_penyewaan,
                 onNavigateBack = { navController.popBackStack() },
+                context = context,
                 onReportSubmitted = {
                     navController.navigate(Screen.Status.route) {
                         popUpTo(Screen.Report.route) { inclusive = true }
@@ -185,12 +207,6 @@ fun AppNavigation(navController: NavHostController) {
         }
 
 
-
-
-
-
-
-
         // Halaman Detail Property
         composable(
             route = Screen.DetailProperty.route,
@@ -209,6 +225,7 @@ fun AppNavigation(navController: NavHostController) {
                 }
             )
         }
+
 
         // Halaman Pesanan
         composable(

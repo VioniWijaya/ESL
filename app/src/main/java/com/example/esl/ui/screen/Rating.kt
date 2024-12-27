@@ -177,13 +177,13 @@ fun UlasanPage(
 
                 // Tampilkan gambar jika URI tersedia
                 imageUri?.let { uri ->
-                    Image(
-                        painter = rememberAsyncImagePainter(uri),
-                        contentDescription = "Preview Foto",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                    )
+//                    Image(
+//                        painter = rememberAsyncImagePainter(uri),
+//                        contentDescription = "Preview Foto",
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .height(200.dp)
+//                    )
                 } ?: run {
                     Text(
                         text = "Tidak ada foto yang diambil.",

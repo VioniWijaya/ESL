@@ -1,4 +1,4 @@
-package com.example.esl.ui.screen
+package com.example.esl.ui
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -34,10 +34,13 @@ fun RiwayatScreen(navController: NavController, context: Context) {
     LaunchedEffect(Unit) {
         val sharedPreferences: SharedPreferences =
             context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        val token = sharedPreferences.getString("jwt_token", null)
+        val token = sharedPreferences.getString("jwt_token", null) // Konsistensi dengan auth_token
 
         if (token != null) {
             viewModel.loadRentals("Bearer $token") // Memanggil fungsi loadRentals
+        } else {
+            // Tangani token yang tidak ada (misalnya navigasi ke layar login)
+            navController.navigate(Screen.Login.route)
         }
     }
 
@@ -74,7 +77,6 @@ fun RiwayatScreen(navController: NavController, context: Context) {
                             rental = rental,
                             navController = navController
                         )
-
                     }
                 }
             }

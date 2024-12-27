@@ -1,5 +1,7 @@
 package com.example.esl.ui
 
+import android.content.Context
+import android.content.SharedPreferences
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -19,11 +21,17 @@ import com.example.esl.models.network.RetrofitInstance
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier, onLoginSuccess: ()-> Unit, onRegisterClick: () -> Unit) {
+fun LoginScreen(
+    modifier: Modifier = Modifier,
+    onLoginSuccess: () -> Unit,
+    onRegisterClick: () -> Unit,
+    context: Context // Tambahkan parameter context untuk SharedPreferences
+) {
     val coroutineScope = rememberCoroutineScope()
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -91,6 +99,14 @@ fun LoginScreen(modifier: Modifier = Modifier, onLoginSuccess: ()-> Unit, onRegi
                             println("Request data: $loginRequest")
                             val response = RetrofitInstance.api.login(loginRequest)
                             println("Response: $response")
+
+                            // Simpan token ke SharedPreferences jika login berhasil
+                            val sharedPreferences: SharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+                            val editor = sharedPreferences.edit()
+                            editor.putString("jwt_token", response.token) // Asumsi bahwa response mengandung token
+                            editor.apply() // Simpan perubahan ke SharedPreferences
+
+                            // Panggil fungsi onLoginSuccess
                             onLoginSuccess()
                         } catch (e: Exception) {
                             errorMessage = "Login gagal: ${e.message}"

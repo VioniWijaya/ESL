@@ -1,3 +1,4 @@
+package com.example.esl.ui
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -54,6 +55,7 @@ fun ProfileScreen(
             ProfileContent(
                 username = username,
                 profileImageUri = profileImageUri,
+                navController = navController,
                 onImageSelected = { uri -> viewModel.updateProfileImage(uri) },
                 onLogout = {
                     // Implementasi logout
@@ -69,6 +71,7 @@ fun ProfileScreen(
 @Composable
 private fun ProfileContent(
     username: String,
+    navController: NavController,
     profileImageUri: Uri?,
     onImageSelected: (Uri) -> Unit,
     onLogout: () -> Unit
@@ -173,7 +176,7 @@ private fun ProfileContent(
                 SettingsItem(
                     icon = Icons.Default.Favorite,
                     text = "Favorit",
-                    onClick = { /* Handle favorites */ }
+                    onClick = { navController.navigate(Screen.Favorite.route) }
                 )
 
                 Divider(color = Color.White.copy(alpha = 0.2f))

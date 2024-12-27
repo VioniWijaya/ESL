@@ -39,7 +39,7 @@ fun RescheduleScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFF40E0D0)),
+                .background(Color(0xFF2ED4D8)),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(32.dp))

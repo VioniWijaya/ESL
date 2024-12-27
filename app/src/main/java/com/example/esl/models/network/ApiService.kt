@@ -175,16 +175,16 @@ interface ApiService {
 
 object RetrofitInstance {
 
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
-        .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
-        .writeTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
-        .build()
+//    private val client = OkHttpClient.Builder()
+//        .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+//        .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+//        .writeTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+//        .build()
 
     val api: ApiService by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .client(client)
+// .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ApiService::class.java)
