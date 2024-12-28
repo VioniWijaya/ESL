@@ -15,7 +15,7 @@ import retrofit2.http.Header
 data class RentalFavorite(
     val id_favorit: Int,
     val id_properti: Int,
-    val namaProperti: String,
+    val nama_properti: String,
     val hargaSewa: Double,
     val lokasi: String,
     val tanggal_ditambahkan: String
@@ -26,7 +26,7 @@ interface RentalFavoriteApi {
     suspend fun getFavorites(@Header("Authorization") token: String): Response<List<RentalFavorite>>
 
     companion object {
-        private const val BASE_URL = "http://192.168.1.14:3000/"
+        private const val BASE_URL = "http://192.168.54.66:3000/"
 
         fun create(): RentalFavoriteApi {
             val retrofit = Retrofit.Builder()

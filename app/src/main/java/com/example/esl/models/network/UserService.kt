@@ -19,14 +19,14 @@ data class User(
 
 // --- Retrofit Service ---
 interface UserApi {
-    @GET("user/profile")
+    @GET("api/profile")
     suspend fun getUserProfile(): User
 }
 
 // --- User Service Singleton ---
 object UserService {
     private val retrofit = Retrofit.Builder()
-        .baseUrl("http://192.168.1.14:3000/") // Ganti dengan base URL Anda
+        .baseUrl("http://192.168.54.66:3000/") // Ganti dengan base URL Anda
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
