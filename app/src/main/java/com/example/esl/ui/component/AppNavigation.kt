@@ -262,25 +262,22 @@ fun AppNavigation(navController: NavHostController) {
 
 
         // Halaman Ulasan
-        composable(
-            route = Screen.Ulasan.route,
-            arguments = listOf(navArgument("orderId") { type = NavType.IntType })
-        ) { backStackEntry ->
-            val orderId = backStackEntry.arguments?.getInt("orderId") ?: 0
-            val ulasanViewModel: UlasanViewModel = viewModel()
 
-//            UlasanPage(
-//                onSubmit = { ulasanRequest ->
-//                    // Update ulasanRequest untuk memasukkan orderId
-//                    val updatedRequest = ulasanRequest.copy(
-//                        id_penyewaan = orderId
-//                    )
-//                    ulasanViewModel.createUlasan(updatedRequest)
-//                    navController.popBackStack()
-//                },
-//                initialRating = 0,
-//                initialUlasan = ""
-//            )
+        composable(
+            route = "ulasan_page/{penyewaanId}",
+            arguments = listOf(navArgument("penyewaanId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val penyewaanId = backStackEntry.arguments?.getInt("penyewaanId") ?: 0
+            UlasanPage(
+                viewModel = viewModel(),
+                penyewaanId = penyewaanId,
+                onSubmit = { ulasanRequest ->
+                    // TODO: Handle submit action
+                },
+                onNavigateBack = { navController.popBackStack() },
+                initialRating = 0,
+                initialUlasan = ""
+            )
         }
     }
 }

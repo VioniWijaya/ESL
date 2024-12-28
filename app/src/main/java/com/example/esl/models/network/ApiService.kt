@@ -18,13 +18,17 @@ import com.example.esl.models.local.entities.Penyewaan
 import com.example.esl.models.local.entities.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Part
 import retrofit2.http.Path
 
 const val BASE_URL = "http://192.168.1.14:3000/"
@@ -144,11 +148,21 @@ interface ApiService {
     @POST("api/ulasan")
     suspend fun createUlasan(@Body ulasanRequest: UlasanRequest): Response<UlasanResponse>
 
-    @PUT("api/ulasan/{id}")
-    suspend fun updateUlasan(
-        @Path("id") id: Int,
-        @Body ulasanRequest: UlasanRequest
-    ): Response<UlasanResponse>
+//    @PUT("api/ulasan/{id}")
+//    suspend fun updateUlasan(
+//        @Path("id") id: Int,
+//        @Body ulasanRequest: UlasanRequest
+//    ): Response<UlasanResponse>
+
+//    @Multipart
+//    @POST("reviews")
+//    suspend fun addReview(
+//        @Header("Authorization") token: String,
+//        @Part("id_penyewaan") idPenyewaan: Int,
+//        @Part("ulasan") ulasan: String,
+//        @Part("rating") rating: Int,
+//        @Part mediaPart: MultipartBody.Part?
+//    ): Response<Void>
 
     @GET("api/ulasan/penyewaan/{id_penyewaan}")
     suspend fun getUlasanByPenyewaan(@Path("id_penyewaan") idPenyewaan: Int): Response<List<UlasanResponse>>

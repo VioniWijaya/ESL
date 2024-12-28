@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.esl.models.network.RetrofitInstance
 import com.example.esl.models.network.UlasanRequest
 import com.example.esl.models.network.UlasanResponse
-import com.example.esl.repository.UlasanRepository
 import kotlinx.coroutines.launch
 
 class UlasanViewModel : ViewModel() {
@@ -37,20 +36,20 @@ class UlasanViewModel : ViewModel() {
         }
     }
 
-    fun updateUlasan(id: Int, ulasanRequest: UlasanRequest) {
-        viewModelScope.launch {
-            try {
-                val response = ulasanApi.updateUlasan(id, ulasanRequest)
-                if (response.isSuccessful) {
-                    Log.d("Ulasan", "Ulasan berhasil diupdate: ${response.body()}")
-                } else {
-                    Log.e("Ulasan", "Error: ${response.errorBody()?.string()}")
-                }
-            } catch (e: Exception) {
-                Log.e("Ulasan", "Exception: ${e.message}")
-            }
-        }
-    }
+//    fun updateUlasan(id: Int, ulasanRequest: UlasanRequest) {
+//        viewModelScope.launch {
+//            try {
+//                val response = ulasanApi.updateUlasan(id, ulasanRequest)
+//                if (response.isSuccessful) {
+//                    Log.d("Ulasan", "Ulasan berhasil diupdate: ${response.body()}")
+//                } else {
+//                    Log.e("Ulasan", "Error: ${response.errorBody()?.string()}")
+//                }
+//            } catch (e: Exception) {
+//                Log.e("Ulasan", "Exception: ${e.message}")
+//            }
+//        }
+//    }
 
     fun getUlasanByPenyewaan(idPenyewaan: Int) {
         viewModelScope.launch {

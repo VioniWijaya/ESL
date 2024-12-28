@@ -124,7 +124,7 @@ fun RentalCard(
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
                     onClick = {
-                        navController.navigate(Screen.Ulasan.createRoute(rental.id_penyewaan))
+                        navController.navigate("ulasan_page/${rental.id_penyewaan}")
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF007B7F))

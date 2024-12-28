@@ -70,6 +70,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
+import coil.compose.rememberAsyncImagePainter
 import com.example.esl.ui.theme.BarColor
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -177,13 +178,13 @@ fun UlasanPage(
 
                 // Tampilkan gambar jika URI tersedia
                 imageUri?.let { uri ->
-//                    Image(
-//                        painter = rememberAsyncImagePainter(uri),
-//                        contentDescription = "Preview Foto",
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .height(200.dp)
-//                    )
+                    Image(
+                        painter = rememberAsyncImagePainter(uri),
+                        contentDescription = "Preview Foto",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                    )
                 } ?: run {
                     Text(
                         text = "Tidak ada foto yang diambil.",
