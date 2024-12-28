@@ -53,6 +53,7 @@ fun FavoritScreen(navController: NavController, context: Context) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .background(Color(0xFF007B7F))
                         .padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -104,7 +105,7 @@ fun FavoriteCard(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Nama Properti: ${favorite.namaProperti}",
+                text = "Nama Properti: ${favorite.nama_properti}",
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
@@ -122,7 +123,7 @@ fun FavoriteCard(
             Spacer(modifier = Modifier.height(8.dp))
             Button(
                 onClick = {
-                    navController.navigate("order/${favorite.id_properti}") // Navigasi ke halaman pesan lagi
+                    navController.navigate("detail/${favorite.id_properti}") // Navigasi ke halaman pesan lagi
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF007B7F))

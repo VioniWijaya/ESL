@@ -31,7 +31,7 @@ data class Report(
 
 object ReportService {
 
-    private const val SERVER_URL = "http://192.168.1.14:3000/"
+    private const val SERVER_URL = "http://192.168.54.66:3000/"
 
     // Retrofit API Interface
     interface ReportApi {

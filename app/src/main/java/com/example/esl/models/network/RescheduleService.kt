@@ -53,7 +53,7 @@ interface RescheduleService {
     companion object {
         fun create(): RescheduleService {
             return Retrofit.Builder()
-                .baseUrl("http://192.168.1.14:3000/") // Replace with your base URL
+                .baseUrl("http://192.168.54.66:3000/") // Replace with your base URL
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(RescheduleService::class.java)

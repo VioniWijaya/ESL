@@ -33,7 +33,7 @@ interface CancelApi {
     ): Response<CancellationResponse>
 
     companion object {
-        private const val BASE_URL = "http://192.168.1.14:3000/"
+        private const val BASE_URL = "http://192.168.54.66:3000/"
 
         fun create(): CancelApi {
             return Retrofit.Builder()
