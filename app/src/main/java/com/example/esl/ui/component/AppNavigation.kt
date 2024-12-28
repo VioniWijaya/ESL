@@ -1,6 +1,7 @@
 package com.example.esl.ui.component
 
 
+import CancelScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -70,6 +71,10 @@ sealed class Screen(val route: String) {
         fun createRoute(id_penyewaan: Int) = "report/$id_penyewaan"
     }
     object Favorite: Screen("favorite")
+
+    object Cancel : Screen("cancel/{id_penyewaan}") {
+        fun createRoute(id_penyewaan: Int) = "cancel/$id_penyewaan"
+    }
 
 }
 
@@ -146,6 +151,17 @@ fun AppNavigation(navController: NavHostController) {
 
         }
 
+        // Di dalam NavHost:
+        composable(
+            route = Screen.Cancel.route,
+            arguments = listOf(navArgument("id_penyewaan") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val id_penyewaan = backStackEntry.arguments?.getInt("id_penyewaan") ?: 0
+            CancelScreen(
+                id_penyewaan = id_penyewaan,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
         composable(Screen.Profile.route) {
             ProfileScreen(navController)
         }
@@ -245,28 +261,6 @@ fun AppNavigation(navController: NavHostController) {
         }
 
 
-//        composable(Screen.DaftarPenyewaan.route) {
-//            val viewModel: PenyewaanViewModel = viewModel()
-//
-//            // Ambil userId, misalnya dari sesi atau data lokal
-//            val userId = 1 // Ganti dengan userId yang sesuai
-//
-//            // Panggil fungsi fetch data di ViewModel
-//            LaunchedEffect(Unit) {
-//                viewModel.fetchPenyewaanByUser(userId)
-//            }
-//
-//            DaftarPenyewaanPage(
-//                modifier = Modifier,
-//                penyewaanList = viewModel.penyewaanList.value,
-//                onUlasanClick = { orderId ->
-//                    navController.navigate(Screen.Ulasan.createRoute(orderId))
-//                },
-//                onCancelClick = { orderId ->
-//                    // Handle cancel logic
-//                }
-//            )
-//        }
         // Halaman Ulasan
         composable(
             route = Screen.Ulasan.route,

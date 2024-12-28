@@ -26,7 +26,7 @@ interface UserApi {
 // --- User Service Singleton ---
 object UserService {
     private val retrofit = Retrofit.Builder()
-        .baseUrl("http://192.168.233.66:3000/") // Ganti dengan base URL Anda
+        .baseUrl("http://192.168.1.14:3000/") // Ganti dengan base URL Anda
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 

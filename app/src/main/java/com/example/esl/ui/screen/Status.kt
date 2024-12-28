@@ -118,7 +118,9 @@ fun StatusCard(status: RentalStatus, navController: NavController) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Button(
-                    onClick = { /* TODO: Add Cancel Functionality */ },
+                    onClick = {
+                        navController.navigate(Screen.Cancel.createRoute(id_penyewaan = status.id_penyewaan))
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
                 ) {
                     Text(text = "Cancel", color = Color.White)

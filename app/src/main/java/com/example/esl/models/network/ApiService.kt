@@ -27,7 +27,7 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
-const val BASE_URL = "http://192.168.233.66:3000/"
+const val BASE_URL = "http://192.168.1.14:3000/"
 
 data class RegisterRequest(
     val nama: String,
@@ -119,22 +119,6 @@ data class PenyewaanRequest(
     val tanggalAkhir: String
 )
 
-//data class CancelPenyewaanRequest(
-//    val id_penyewaan: Int,
-//    val alasanPembatalan: String
-//)
-
-data class CancellationRequest(
-    val id_penyewaan: String,
-    val alasan_batal: String
-)
-
-data class CancellationResponse(
-    val success: Boolean,
-    val message: String,
-    val data: Penyewaan
-)
-
 
 interface ApiService {
     @POST("api/auth/register")
@@ -156,9 +140,6 @@ interface ApiService {
 
     @POST("api/penyewaan")
     suspend fun createPenyewaan(@Body penyewaanRequest: PenyewaanRequest): Response<PenyewaanResponse>
-
-    @POST("batal")
-    suspend fun cancelRental(@Body request: CancellationRequest): Response<CancellationResponse>
 
     @POST("api/ulasan")
     suspend fun createUlasan(@Body ulasanRequest: UlasanRequest): Response<UlasanResponse>
